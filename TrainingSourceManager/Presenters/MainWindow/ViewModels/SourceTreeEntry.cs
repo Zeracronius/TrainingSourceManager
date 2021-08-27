@@ -29,7 +29,7 @@ namespace TrainingSourceManager.Presenters.MainWindow.ViewModels
         }
 
         public string Name => _sourceItem.Name;
-        public string Tags => _sourceItem.Tags;
+        public string Tags => String.Join(", ", _sourceItem.Tags);
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {

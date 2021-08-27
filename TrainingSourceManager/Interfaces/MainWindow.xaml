@@ -18,8 +18,9 @@
         <ToolBarPanel DockPanel.Dock="Top">
             <ToolBar ToolBarTray.IsLocked="True" >
                 <Menu ToolBar.OverflowMode="Never">
-                    <MenuItem Header="File" Click="MenuItem_Click" />
-                    <MenuItem Header="New" />
+                    <MenuItem Header="File" VerticalContentAlignment="Center" Click="MenuItem_Click" />
+                    <MenuItem Header="New" VerticalContentAlignment="Center" />
+                    <CheckBox Name="CrossNestCheckbox" Content="Cross-Nest" IsChecked="{Binding CrossNest}" />
                 </Menu>
             </ToolBar>
         </ToolBarPanel>
