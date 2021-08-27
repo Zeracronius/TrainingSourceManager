@@ -11,29 +11,21 @@ namespace TrainingSourceManager.Presenters.MainWindow.ViewModels
     public class SourceTreeEntry: ITreeEntry, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
-        private readonly SelectableSourceItem _sourceItem;
+        private SelectableSourceItem _sourceItem;
 
         public SourceTreeEntry(SelectableSourceItem sourceItem)
         {
             _sourceItem = sourceItem;
+            _sourceItem.PropertyChanged += (s, e) => PropertyChanged?.Invoke(this, e);
         }
 
         public bool Selected 
         { 
             get => _sourceItem.Selected;
-            set
-            {
-                _sourceItem.Selected = value;
-                OnPropertyChanged();
-            }
+            set => _sourceItem.Selected = value;
         }
 
         public string Name => _sourceItem.Name;
         public string Tags => String.Join(", ", _sourceItem.Tags);
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 }

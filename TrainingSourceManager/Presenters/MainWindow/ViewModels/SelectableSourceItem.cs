@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace TrainingSourceManager.Presenters.MainWindow.ViewModels
 {
-    public class SelectableSourceItem
+    public class SelectableSourceItem : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler? PropertyChanged;
         readonly Data.Source _source;
+        private bool _selected;
 
         public SelectableSourceItem(Data.Source source)
         {
@@ -18,9 +22,23 @@ namespace TrainingSourceManager.Presenters.MainWindow.ViewModels
             Category = "";
         }
 
-        public bool Selected { get; set; }
+        public bool Selected 
+        { 
+            get => _selected;
+            set
+            {
+                _selected = value;
+                OnPropertyChanged();
+            }
+        }
         public string Name { get; set; }
         public string[] Tags { get; set; }
         public string Category { get; set; }
+
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

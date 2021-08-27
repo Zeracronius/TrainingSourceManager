@@ -25,24 +25,30 @@
             </ToolBar>
         </ToolBarPanel>
 
-        <TreeView Name="SourceTree" Margin="0,33,0,0" ItemsSource="{Binding SourceTreeEntries}">
+        <TreeView Name="SourceTree" Margin="0,33,0,0" HorizontalContentAlignment="Stretch" ItemsSource="{Binding SourceTreeEntries}" BorderThickness="0" Grid.ColumnSpan="4">
             <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type viewModels:CategoryTreeEntry}" ItemsSource="{Binding Entries}">
-                    <StackPanel Orientation="Horizontal">
-                        <Label VerticalAlignment="Center" FontFamily="WingDings" Content="1"/>
-                        <TextBlock Text="{Binding Name}" />
-                    </StackPanel>
-                </HierarchicalDataTemplate>
-                <DataTemplate DataType="{x:Type viewModels:SourceTreeEntry}">
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding Selected}" />
-                        <Label VerticalAlignment="Center" FontFamily="WingDings" Content="2"/>
-                        <TextBlock Text="{Binding Name}" />
-                        <TextBlock Text="{Binding Tags}" />
-                    </StackPanel>
-                </DataTemplate>
-            </TreeView.Resources>
-        </TreeView>
+                    <HierarchicalDataTemplate DataType="{x:Type viewModels:CategoryTreeEntry}" ItemsSource="{Binding Entries}">
+                        <StackPanel Orientation="Horizontal">
+                            <Label VerticalAlignment="Center" FontFamily="WingDings" Content="1"/>
+                            <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                    <DataTemplate DataType="{x:Type viewModels:SourceTreeEntry}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="0.3*"/>
+                                <ColumnDefinition Width="0.3*"/>
+                                <ColumnDefinition Width="0.3*"/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox IsChecked="{Binding Selected}" VerticalContentAlignment="Center" Grid.Column="0" />
+                            <Label VerticalAlignment="Center" FontFamily="WingDings" Grid.Column="1" Content="2"/>
+                            <TextBlock Text="{Binding Name}" Grid.Column="2" />
+                            <TextBlock Text="{Binding Tags}" Grid.Column="3" />
+                        </Grid>
+                    </DataTemplate>
+                </TreeView.Resources>
+            </TreeView>
 
     </Grid>
 </Window>

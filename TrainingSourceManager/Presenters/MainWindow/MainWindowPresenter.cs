@@ -42,11 +42,12 @@ namespace TrainingSourceManager.Presenters.MainWindow
 
 
             //SourceTreeEntries.Clear();
-            IEnumerable<Data.Source> sources = _dataContext.Sources.Include(x => x.Metadata).ToList();
-            sources.First().AddMetadata(Data.MetadataType.Tag, "Tag1");
-            sources.First().AddMetadata(Data.MetadataType.Tag, "Tag2");
-            sources.First().AddMetadata(Data.MetadataType.Tag, "Tag3");
-            IEnumerable<ViewModels.SelectableSourceItem> sourceItems = sources.Select(x => new ViewModels.SelectableSourceItem(x));
+            List<Data.Source> sources = _dataContext.Sources.Include(x => x.Metadata).ToList();
+            sources.Add(new Data.Source("Test2"));
+            sources[0].AddMetadata(Data.MetadataType.Tag, "Tag1");
+            sources[0].AddMetadata(Data.MetadataType.Tag, "Tag2");
+            sources[0].AddMetadata(Data.MetadataType.Tag, "Tag3");
+            IEnumerable<ViewModels.SelectableSourceItem> sourceItems = sources.Select(x => new ViewModels.SelectableSourceItem(x)).ToList();
             List<ViewModels.ITreeEntry> list = new List<ViewModels.ITreeEntry>();
 
             if (CrossNest)
