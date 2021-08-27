@@ -13,5 +13,12 @@ namespace TrainingSourceManager
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            Interfaces.MainWindow window = new Interfaces.MainWindow(new Presenters.MainWindow.MainWindowPresenter());
+            window.Show();
+        }
     }
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace TrainingSourceManager.Data
 {
     [Table("Source")]
-    internal class Source
+    public class Source
     {
         public Source(string name)
         {

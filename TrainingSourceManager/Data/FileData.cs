@@ -10,7 +10,7 @@ namespace TrainingSourceManager.Data
 {
 
     [Table("FileData")]
-    internal class FileData
+    public class FileData
     {
         protected private FileData()
         {

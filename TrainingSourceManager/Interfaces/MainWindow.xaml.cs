@@ -12,29 +12,31 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TrainingSourceManager.Presenters.MainWindow;
 
-namespace TrainingSourceManager
+namespace TrainingSourceManager.Interfaces
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindowPresenter Presenter { get; private set; }
+
+        public MainWindow(MainWindowPresenter presenter)
         {
+            Presenter = presenter;
             InitializeComponent();
+        }
 
-            Data.DataContext x = new Data.DataContext();
-            x.Database.EnsureDeleted();
-            x.Database.EnsureCreated();
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            Presenter.LoadData();
+        }
 
-
-            Data.Source source = new Data.Source("Test");
-            source.AddMetadata(Data.MetadataType.Category, "TestCat");
-            source.AddFile(new System.IO.FileInfo("TrainingSourceManager.dll.config"));
-
-            x.Sources.Add(source);
-            x.SaveChanges();
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var x = SourceTree.Items;
         }
     }
 }

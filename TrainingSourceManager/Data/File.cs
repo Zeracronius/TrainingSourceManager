@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace TrainingSourceManager.Data
 {
     [Table("File")]
-    internal class File
+    public class File
     {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         protected private File()

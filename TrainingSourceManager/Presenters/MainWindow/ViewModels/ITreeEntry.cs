@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TrainingSourceManager.Data
+namespace TrainingSourceManager.Presenters.MainWindow.ViewModels
 {
-    public enum MetadataType
+    public interface ITreeEntry
     {
-        Tag = 0,
-        Category = 1,
+        public string Name { get; }
     }
 }
