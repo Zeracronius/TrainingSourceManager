@@ -43,10 +43,6 @@ namespace TrainingSourceManager.Presenters.MainWindow
 
             //SourceTreeEntries.Clear();
             List<Data.Source> sources = _dataContext.Sources.Include(x => x.Metadata).ToList();
-            sources.Add(new Data.Source("Test2"));
-            sources[0].AddMetadata(Data.MetadataType.Tag, "Tag1");
-            sources[0].AddMetadata(Data.MetadataType.Tag, "Tag2");
-            sources[0].AddMetadata(Data.MetadataType.Tag, "Tag3");
             IEnumerable<ViewModels.SelectableSourceItem> sourceItems = sources.Select(x => new ViewModels.SelectableSourceItem(x)).ToList();
             List<ViewModels.ITreeEntry> list = new List<ViewModels.ITreeEntry>();
 
@@ -69,37 +65,6 @@ namespace TrainingSourceManager.Presenters.MainWindow
             }
 
             list.AddRange(sourceItems.Where(x => x.Tags.Length == 0).Select(x => new ViewModels.SourceTreeEntry(x)));
-
-
-            //IEnumerable<ViewModels.SelectableSourceItem> sourceItems = _dataContext.Sources.ToList().Select(x => new ViewModels.SelectableSourceItem(x));
-
-
-            //foreach (ViewModels.SelectableSourceItem sourceItem in sourceItems)
-            //{
-                
-            //}
-
-
-            //List<ViewModels.ITreeEntry> list = new List<ViewModels.ITreeEntry>(sourceItems.Select(x => new ViewModels.SourceTreeEntry(x)));
-
-
-            //list.AddRange(list);
-            //list.AddRange(list);
-            //list.Add(new ViewModels.CategoryTreeEntry(sourceItems.Select(x => new ViewModels.SourceTreeEntry(x)), "Category"));
-            //list.AddRange(list);
-
-
-            //Data.DataContext x = new Data.DataContext();
-            //x.Database.EnsureDeleted();
-            //x.Database.EnsureCreated();
-
-
-            //Data.Source source = new Data.Source("Test");
-            //source.AddMetadata(Data.MetadataType.Category, "TestCat");
-            //source.AddFile(new System.IO.FileInfo("TrainingSourceManager.dll.config"));
-
-            //x.Sources.Add(source);
-            //x.SaveChanges();
 
             SourceTreeEntries = new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>(list);
             OnPropertyChanged(nameof(SourceTreeEntries));
@@ -125,6 +90,9 @@ namespace TrainingSourceManager.Presenters.MainWindow
                 return new List<ViewModels.ITreeEntry>(sources.Select(x => new ViewModels.SourceTreeEntry(x)));
             }
         }
+
+
+
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {

@@ -38,5 +38,53 @@ namespace TrainingSourceManager.Interfaces
         {
             var x = SourceTree.Items;
         }
+
+        private void SourceTree_DragOver(object sender, DragEventArgs e)
+        {
+            string[] filePaths = (string[])e.Data.GetData("FileNameW");
+            if (filePaths.Length > 0)
+            {
+                foreach (string filePath in filePaths)
+                {
+                    if (System.IO.File.Exists(filePath) == false)
+                    {
+                        e.Effects = DragDropEffects.None;
+                        e.Handled = true;
+                        return;
+                    }
+
+                    e.Effects = DragDropEffects.Copy;
+                    e.Handled = true;
+                    return;
+                }
+            }
+            e.Effects = DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void SourceTree_Drop(object sender, DragEventArgs e)
+        {
+            string[] filePaths = (string[])e.Data.GetData("FileNameW");
+            if (filePaths.Length > 0)
+            {
+                foreach (string filePath in filePaths)
+                {
+                }
+            }
+        }
+
+        private void SourceTree_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+        {
+
+            base.OnGiveFeedback(e);
+            // These Effects values are set in the drop target's
+            // DragOver event handler.
+            if (e.Effects.HasFlag(DragDropEffects.Copy))
+                Mouse.SetCursor(Cursors.Cross);
+            else
+                Mouse.SetCursor(Cursors.No);
+
+            e.Handled = true;
+        }
     }
 }
