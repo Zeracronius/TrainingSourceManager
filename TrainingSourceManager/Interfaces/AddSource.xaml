@@ -9,6 +9,15 @@
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         WindowStartupLocation="CenterOwner">
     <Grid DataContext="{Binding Presenter}">
+        <Grid.Resources>
+            <Style TargetType="{x:Type FrameworkElement}" x:Key="ValidatingControl">
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)/ErrorContent}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="1"/>
@@ -25,7 +34,7 @@
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
             <Label Content="Source name:" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <TextBox Text="{Binding Name}" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" />
+            <TextBox Text="{Binding Name, ValidatesOnDataErrors=True}" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" Style="{DynamicResource ValidatingControl}" />
         </Grid>
         <GroupBox Header="Files" Grid.Row="1" Grid.Column="0">
             <ListBox Name="FileList" ItemsSource="{Binding Files}" AllowDrop="True" GiveFeedback="FileList_GiveFeedback" DragOver="FileList_DragOver" Drop="FileList_Drop" KeyUp="FileList_KeyUp" SelectionMode="Extended" />

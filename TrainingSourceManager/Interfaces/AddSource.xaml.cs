@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,33 +47,20 @@ namespace TrainingSourceManager.Interfaces
 
         private void FileList_DragOver(object sender, DragEventArgs e)
         {
-
-            string[] filePaths = (string[])e.Data.GetData("FileNameW");
-            if (filePaths.Length > 0)
-            {
-                foreach (string filePath in filePaths)
-                {
-                    if (System.IO.File.Exists(filePath) == false)
-                    {
-                        e.Effects = DragDropEffects.None;
-                        e.Handled = true;
-                        return;
-                    }
-
-                    e.Effects = DragDropEffects.Copy;
-                    e.Handled = true;
-                    return;
-                }
-            }
-            e.Effects = DragDropEffects.None;
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effects = DragDropEffects.Copy;
+            else
+                e.Effects = DragDropEffects.None;
             e.Handled = true;
         }
 
         private void FileList_Drop(object sender, DragEventArgs e)
         {
-            string[] filePaths = (string[])e.Data.GetData("FileNameW");
-            if (filePaths.Length > 0)
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] filePaths = (string[])e.Data.GetData(DataFormats.FileDrop);
                 Presenter.AddFiles(filePaths);
+            }
             e.Handled = true;
         }
 
@@ -84,7 +72,8 @@ namespace TrainingSourceManager.Interfaces
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-
+            
+            Presenter.SaveChanges();
         }
 
         private void TagsList_KeyUp(object sender, KeyEventArgs e)

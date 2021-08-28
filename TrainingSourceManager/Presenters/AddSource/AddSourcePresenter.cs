@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,14 +9,34 @@ using System.Threading.Tasks;
 
 namespace TrainingSourceManager.Presenters.AddSource
 {
-    public class AddSourcePresenter : INotifyPropertyChanged
+    public class AddSourcePresenter : INotifyPropertyChanged, IDataErrorInfo
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        [Required]
         public string Name { get; set; }
         public ObservableCollection<string> Tags { get; set; }
         public ObservableCollection<string> Files { get; set; }
+
+
+
+
+        string? IDataErrorInfo.Error => null;
+
+        string? IDataErrorInfo.this[string propertyName]
+        {
+            get
+            {
+                switch (propertyName)
+                {
+                    case nameof(Name):
+                        if (string.IsNullOrWhiteSpace(Name))
+                            return "Name cannot be empty.";
+                        break;
+                }
+
+                return string.Empty;
+            }
+        }
 
 
 
