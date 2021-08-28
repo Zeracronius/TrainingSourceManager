@@ -103,7 +103,19 @@ namespace TrainingSourceManager.Presenters.AddSource
         {
             using (Data.DataContext context = new Data.DataContext())
             {
+                Data.Source source = new Data.Source(Name);
+                foreach (string path in Files)
+                {
+                    var file = new System.IO.FileInfo(path);
+                    if (file.Exists)
+                        source.AddFile(file);
+                }
 
+                foreach (string tag in Tags)
+                    source.AddMetadata(Data.MetadataType.Tag, tag);
+
+                context.Sources.Add(source);
+                context.SaveChanges();
             }
         }
 

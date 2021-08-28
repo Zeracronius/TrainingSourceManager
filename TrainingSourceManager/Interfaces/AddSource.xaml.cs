@@ -66,14 +66,14 @@ namespace TrainingSourceManager.Interfaces
 
         private void AddTagButton_Click(object sender, RoutedEventArgs e)
         {
-            Presenter.AddTag(AddTagTextbox.Text);
-            AddTagTextbox.Text = string.Empty;
+            CreateTag();
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            
             Presenter.SaveChanges();
+            DialogResult = true;
+            this.Close();
         }
 
         private void TagsList_KeyUp(object sender, KeyEventArgs e)
@@ -90,6 +90,18 @@ namespace TrainingSourceManager.Interfaces
             {
                 Presenter.DeleteFiles(FileList.SelectedItems.Cast<string>().ToArray());
             }
+        }
+
+        private void AddTagTextbox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && String.IsNullOrWhiteSpace(AddTagTextbox.Text) == false)
+                CreateTag();
+        }
+
+        private void CreateTag()
+        {
+            Presenter.AddTag(AddTagTextbox.Text);
+            AddTagTextbox.Text = string.Empty;
         }
     }
 }

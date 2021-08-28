@@ -19,9 +19,9 @@
             </Style>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0.3*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -50,7 +50,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <TextBox Name="AddTagTextbox" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,5,5,5" TextWrapping="Wrap" VerticalAlignment="Top" />
+                <TextBox Name="AddTagTextbox" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,5,5,5" TextWrapping="Wrap" VerticalAlignment="Top" KeyUp="AddTagTextbox_KeyUp" />
                 <Button Name="AddTagButton" Content="Add" Grid.Column="1" Margin="0,3,5,3" Click="AddTagButton_Click" />
                 <ListBox Name="TagsList" ItemsSource="{Binding Tags}" Grid.Row="1" Grid.ColumnSpan="2" KeyUp="TagsList_KeyUp" SelectionMode="Extended" />
             </Grid>
@@ -63,7 +63,7 @@
                 </Style>
             </WrapPanel.Resources>
             <Button Content="Cancel" Name="CancelButton" IsCancel="True" />
-            <Button Content="Save" Name="SaveButton" IsDefault="True" Click="SaveButton_Click" />
+            <Button Content="Save" Name="SaveButton" Click="SaveButton_Click" />
         </WrapPanel>
 
     </Grid>
