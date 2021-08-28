@@ -33,20 +33,13 @@
                             <TextBlock Text="{Binding Name}" />
                         </StackPanel>
                     </HierarchicalDataTemplate>
-                    <DataTemplate DataType="{x:Type viewModels:SourceTreeEntry}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="0.3*"/>
-                                <ColumnDefinition Width="0.3*"/>
-                                <ColumnDefinition Width="0.3*"/>
-                            </Grid.ColumnDefinitions>
-                            <CheckBox IsChecked="{Binding Selected}" VerticalContentAlignment="Center" Grid.Column="0" />
-                            <Label VerticalAlignment="Center" FontFamily="WingDings" Grid.Column="1" Content="2"/>
-                            <TextBlock Text="{Binding Name}" Grid.Column="2" />
-                            <TextBlock Text="{Binding Tags}" Grid.Column="3" />
-                        </Grid>
-                    </DataTemplate>
+                <DataTemplate DataType="{x:Type viewModels:SourceTreeEntry}">
+                    <WrapPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Selected}" VerticalContentAlignment="Center" />
+                        <Label VerticalAlignment="Center" FontFamily="WingDings" Content="2"/>
+                        <TextBlock Text="{Binding Name}" />
+                    </WrapPanel>
+                </DataTemplate>
                 </TreeView.Resources>
             </TreeView>
 
