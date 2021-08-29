@@ -39,14 +39,13 @@
                     <HierarchicalDataTemplate DataType="{x:Type viewModels:CategoryTreeEntry}" ItemsSource="{Binding Entries}">
                         <StackPanel Orientation="Horizontal">
                             <Label VerticalAlignment="Stretch" VerticalContentAlignment="Center" FontFamily="WingDings" Content="1"/>
-                            <TextBlock Text="{Binding Caption}" VerticalAlignment="Stretch" />
+                            <Label  VerticalAlignment="Stretch" VerticalContentAlignment="Center" Content="{Binding Caption}"/>
                         </StackPanel>
                     </HierarchicalDataTemplate>
                     <DataTemplate DataType="{x:Type viewModels:SourceTreeEntry}">
                         <WrapPanel Orientation="Horizontal">
                             <CheckBox IsChecked="{Binding Selected}" VerticalContentAlignment="Center" />
-                            <Label  VerticalAlignment="Stretch" VerticalContentAlignment="Center" FontFamily="WingDings" Content="2"/>
-                            <TextBlock Text="{Binding Caption}" VerticalAlignment="Stretch" />
+                            <Label  VerticalAlignment="Stretch" VerticalContentAlignment="Center" Content="{Binding Caption}" Margin="0,0,0,1"/>
                         </WrapPanel>
                     </DataTemplate>
                     <ContextMenu x:Key="CategoryContextMenu">
