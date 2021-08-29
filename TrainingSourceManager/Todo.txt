@@ -1,10 +1,5 @@
-﻿Backup function.
-Source details.
-Manual create button.
-Source Delete.
+﻿Source details.
 Edit data.
 Export files.
-Window titles.
 Adding tags should detect existing matching tag and copy that phrasing.
-Right click folder => Select all.
 Context menus everywhere.
