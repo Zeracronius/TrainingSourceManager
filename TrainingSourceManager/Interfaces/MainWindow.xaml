@@ -8,61 +8,91 @@
         xmlns:ext="clr-namespace:TrainingSourceManager"
         mc:Ignorable="d"
         Title="Training Source Manager" 
-        Height="450" 
-        Width="800" 
+        Height="590" 
+        Width="911" 
         Loaded="Window_Loaded"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
-    <Grid DataContext="{Binding Presenter}">
-        <!--{ext:NameOf Type={x:Type local:MainWindow}, Member=_presenter}-->
-        <ToolBarPanel DockPanel.Dock="Top">
-            <ToolBar ToolBarTray.IsLocked="True" >
-                <Menu ToolBar.OverflowMode="Never">
-                    <MenuItem Header="Edit" VerticalContentAlignment="Center" >
-                        <MenuItem Header="Add" Click="Edit_Add"/>
-                        <MenuItem Header="Delete" Click="Edit_Delete"/>
-                        <MenuItem Header="Backup" Click="Edit_Backup"/>
-                        <MenuItem Header="Restore" Click="Edit_Restore" />
-                    </MenuItem>
-                    <MenuItem Header="Selected" VerticalContentAlignment="Center" >
-                        <MenuItem Header="Select all" Click="Selected_SelectAll"/>
-                        <MenuItem Header="Clear" Click="Selected_Clear"/>
-                        <MenuItem Header="Export" Click="Selected_Export"/>
-                    </MenuItem>
-                    <CheckBox Name="CrossNestCheckbox" Content="Cross-Nest" IsChecked="{Binding CrossNest}" />
-                </Menu>
-            </ToolBar>
-        </ToolBarPanel>
-
-        <TreeView Name="SourceTree" Margin="0,33,0,0" HorizontalContentAlignment="Stretch" ItemsSource="{Binding SourceTreeEntries}" BorderThickness="0" Grid.ColumnSpan="4" Drop="SourceTree_Drop" GiveFeedback="SourceTree_GiveFeedback" AllowDrop="True" DragOver="SourceTree_DragOver" PreviewMouseRightButtonDown="SourceTree_PreviewMouseRightButtonDown" >
-            <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type viewModels:CategoryTreeEntry}" ItemsSource="{Binding Entries}">
-                    <StackPanel Orientation="Horizontal">
-                        <Label VerticalAlignment="Center" FontFamily="WingDings" Content="1"/>
-                        <TextBlock Text="{Binding Caption}" />
-                    </StackPanel>
-                </HierarchicalDataTemplate>
-                <DataTemplate DataType="{x:Type viewModels:SourceTreeEntry}">
-                    <WrapPanel Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding Selected}" VerticalContentAlignment="Center" />
-                        <Label VerticalAlignment="Center" FontFamily="WingDings" Content="2"/>
-                        <TextBlock Text="{Binding Caption}" />
-                    </WrapPanel>
-                </DataTemplate>
-
-                <ContextMenu x:Key="CategoryContextMenu">
-                    <MenuItem Header="Select" Click="ContextMenu_Select" />
-                    <MenuItem Header="Unselect" Click="ContextMenu_Unselect" />
-                </ContextMenu>
-                <ContextMenu x:Key="SourceItemContextMenu">
-                    <MenuItem Header="Select" Click="ContextMenu_Select" />
-                    <MenuItem Header="Unselect" Click="ContextMenu_Unselect" />
-                    <Separator />
-                    <MenuItem Header="Delete" Click="ContextMenu_Delete" />
-                </ContextMenu>
-
-            </TreeView.Resources>
-        </TreeView>
-
-    </Grid>
+    <DockPanel DataContext="{Binding Presenter}">
+        <Menu ToolBar.OverflowMode="Never" DockPanel.Dock="Top">
+            <MenuItem Header="_Edit" VerticalContentAlignment="Center" >
+                <MenuItem Header="_Add" Click="Edit_Add"/>
+                <MenuItem Header="_Delete" Click="Edit_Delete"/>
+                <MenuItem Header="_Backup" Click="Edit_Backup"/>
+                <MenuItem Header="_Restore" Click="Edit_Restore" />
+            </MenuItem>
+            <MenuItem Header="_Selected" VerticalContentAlignment="Center" >
+                <MenuItem Header="_Select all" Click="Selected_SelectAll"/>
+                <MenuItem Header="_Clear" Click="Selected_Clear"/>
+                <MenuItem Header="_Export" Click="Selected_Export"/>
+            </MenuItem>
+            <MenuItem Header="Cross-Nest" IsCheckable="True" IsChecked="{Binding CrossNest}" />
+        </Menu>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="250" />
+            </Grid.ColumnDefinitions>
+            <TreeView Name="SourceTree" HorizontalContentAlignment="Stretch" ItemsSource="{Binding SourceTreeEntries}" BorderThickness="0" Drop="SourceTree_Drop" GiveFeedback="SourceTree_GiveFeedback" AllowDrop="True" DragOver="SourceTree_DragOver" PreviewMouseRightButtonDown="SourceTree_PreviewMouseRightButtonDown" Margin="0,0,5,0" Grid.RowSpan="3" SelectedItemChanged="SourceTree_SelectedItemChanged" >
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type viewModels:CategoryTreeEntry}" ItemsSource="{Binding Entries}">
+                        <StackPanel Orientation="Horizontal">
+                            <Label VerticalAlignment="Stretch" VerticalContentAlignment="Center" FontFamily="WingDings" Content="1"/>
+                            <TextBlock Text="{Binding Caption}" VerticalAlignment="Stretch" />
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                    <DataTemplate DataType="{x:Type viewModels:SourceTreeEntry}">
+                        <WrapPanel Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding Selected}" VerticalContentAlignment="Center" />
+                            <Label  VerticalAlignment="Stretch" VerticalContentAlignment="Center" FontFamily="WingDings" Content="2"/>
+                            <TextBlock Text="{Binding Caption}" VerticalAlignment="Stretch" />
+                        </WrapPanel>
+                    </DataTemplate>
+                    <ContextMenu x:Key="CategoryContextMenu">
+                        <MenuItem Header="Select" Click="ContextMenu_Select" />
+                        <MenuItem Header="Unselect" Click="ContextMenu_Unselect" />
+                    </ContextMenu>
+                    <ContextMenu x:Key="SourceItemContextMenu">
+                        <MenuItem Header="Select" Click="ContextMenu_Select" />
+                        <MenuItem Header="Unselect" Click="ContextMenu_Unselect" />
+                        <Separator />
+                        <MenuItem Header="Delete" Click="ContextMenu_Delete" />
+                    </ContextMenu>
+                </TreeView.Resources>
+            </TreeView>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="3" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns" />
+            <Grid Grid.Column="2" DataContext="{Binding SelectedSourceDetails}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="0.5*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <GroupBox Grid.Row="1" Grid.ColumnSpan="2" Header="Tags">
+                    <ListBox ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Tags}" >
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
+                </GroupBox>
+                <GroupBox Header="Files" Grid.Row="2" Grid.ColumnSpan="2" >
+                    <DataGrid ItemsSource="{Binding Files}" AutoGenerateColumns="False" IsReadOnly="True" >
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
+                            <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="Auto" />
+                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="Auto" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+                <Label Content="Name:" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" />
+                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Text="{Binding Name, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" VerticalContentAlignment="Center" />
+            </Grid>
+        </Grid>
+    </DockPanel>
 </Window>

@@ -20,11 +20,13 @@ namespace TrainingSourceManager.Data
 
         internal File(FileInfo file, Source source)
         {
-            Extension = file.Extension.ToUpper();
+            Extension = file.Extension.ToLower().TrimStart('.');
             Length = file.Length;
+            Name = Path.GetFileNameWithoutExtension(file.FullName);
 
             Byte[] bytes = System.IO.File.ReadAllBytes(file.FullName);
             FileData = new FileData(this, bytes);
+
 
             Source = source;
             SourceId = source.Id;
@@ -37,10 +39,16 @@ namespace TrainingSourceManager.Data
 
         public int SourceId { get; set; }
 
+        /// <summary>
+        /// File length in bytes.
+        /// </summary>
         public long Length { get; set; }
 
         [StringLength(20)]
         public string Extension { get; set; }
+
+        [StringLength(200)]
+        public string Name { get; set; }
 
         protected FileData? FileData { get; set; }
 

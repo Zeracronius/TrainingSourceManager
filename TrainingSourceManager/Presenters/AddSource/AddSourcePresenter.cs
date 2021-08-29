@@ -47,7 +47,7 @@ namespace TrainingSourceManager.Presenters.AddSource
             Name = string.Empty;
 
             if (files.Length > 0)
-                Name = System.IO.Path.GetFileName(files[0]);
+                Name = System.IO.Path.GetFileNameWithoutExtension(files[0]);
         }
 
 

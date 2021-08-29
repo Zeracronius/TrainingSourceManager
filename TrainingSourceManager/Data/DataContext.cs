@@ -30,6 +30,10 @@ namespace TrainingSourceManager.Data
                 .HasOne<FileData>("FileData")
                 .WithOne()
                 .HasForeignKey<FileData>(x => x.FileId);
+
+            modelBuilder.Entity<File>()           
+                .HasIndex(x => x.Name)
+                .IsUnique(true);
         }
 
     }

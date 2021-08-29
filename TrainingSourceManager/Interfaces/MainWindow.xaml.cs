@@ -203,5 +203,10 @@ namespace TrainingSourceManager.Interfaces
         {
             DeleteSelected();
         }
+
+        private void SourceTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            Presenter.SelectSource(SourceTree.SelectedItem as SourceTreeEntry);
+        }
     }
 }

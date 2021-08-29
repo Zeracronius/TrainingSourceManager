@@ -17,6 +17,9 @@ namespace TrainingSourceManager.Presenters.MainWindow
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry> SourceTreeEntries { get; set; }
+
+        public ViewModels.SourceDetailsViewModel? SelectedSourceDetails { get; private set; }
+
         public bool CrossNest
         {
             get => _crossNest;
@@ -122,6 +125,20 @@ namespace TrainingSourceManager.Presenters.MainWindow
         private void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void SelectSource(ViewModels.SourceTreeEntry? sourceEntry)
+        {
+            if (sourceEntry != null)
+            {
+                _dataContext?.Entry(sourceEntry.Source).Collection(x => x.Files).Load();
+                SelectedSourceDetails = new ViewModels.SourceDetailsViewModel(sourceEntry.Source);
+                SelectedSourceDetails.LoadData();
+            }
+            else
+                SelectedSourceDetails = null;
+
+            OnPropertyChanged(nameof(SelectedSourceDetails));
         }
     }
 }
