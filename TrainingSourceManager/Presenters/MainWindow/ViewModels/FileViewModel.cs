@@ -8,8 +8,10 @@ namespace TrainingSourceManager.Presenters.MainWindow.ViewModels
 {
     public class FileViewModel
     {
+        internal Data.File File { get; }
         public FileViewModel(Data.File file)
         {
+            File = file;
             Name = file.Name;
             Size = (file.Length / 1024D).ToString("N1") + " KB";
             Type = file.Extension;

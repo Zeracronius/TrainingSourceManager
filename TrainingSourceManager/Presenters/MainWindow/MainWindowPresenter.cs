@@ -20,6 +20,8 @@ namespace TrainingSourceManager.Presenters.MainWindow
 
         public ViewModels.SourceDetailsViewModel? SelectedSourceDetails { get; private set; }
 
+        public bool HasChanges => _dataContext?.ChangeTracker.HasChanges() ?? false;
+
         public bool CrossNest
         {
             get => _crossNest;
@@ -127,8 +129,20 @@ namespace TrainingSourceManager.Presenters.MainWindow
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void SelectSource(ViewModels.SourceTreeEntry? sourceEntry)
+        public void SelectSource(ViewModels.SourceTreeEntry? sourceEntry, bool saveChanges)
         {
+            if (saveChanges)
+                _dataContext?.SaveChanges();
+
+            if (SelectedSourceDetails != null)
+            {
+                _dataContext?.Entry(SelectedSourceDetails.Source).Reload();
+                _dataContext?.Entry(SelectedSourceDetails.Source).Collection(x => x.Files).Load();
+                _dataContext?.Entry(SelectedSourceDetails.Source).Collection(x => x.Metadata).Load();
+
+            }
+            
+
             if (sourceEntry != null)
             {
                 _dataContext?.Entry(sourceEntry.Source).Collection(x => x.Files).Load();

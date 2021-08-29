@@ -206,7 +206,59 @@ namespace TrainingSourceManager.Interfaces
 
         private void SourceTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            Presenter.SelectSource(SourceTree.SelectedItem as SourceTreeEntry);
+            bool save = false;
+            if (Presenter.HasChanges)
+            {
+                MessageBoxResult saveChanges = MessageBox.Show("You have unsaved changes to the currently selected source. Do you wish to save them?", "Unsaved changes", MessageBoxButton.YesNo);
+                if (saveChanges == MessageBoxResult.Yes)
+                    save = true;
+            }
+
+            Presenter.SelectSource(SourceTree.SelectedItem as SourceTreeEntry, save);
+        }
+
+        private void SourceDetail_Save(object sender, RoutedEventArgs e)
+        {
+            Presenter.SelectSource(SourceTree.SelectedItem as SourceTreeEntry, true);
+        }
+
+        private void SourceDetail_Cancel(object sender, RoutedEventArgs e)
+        {
+            if (Presenter.HasChanges)
+            {
+                Presenter.SelectSource(SourceTree.SelectedItem as SourceTreeEntry, false);
+            }
+        }
+
+        private void SourceDetail_FileGrid_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+                DeleteDetailFile();
+        }
+
+        private void SourceDetail_TagList_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+                DeleteDetailTag();
+        }
+
+        private void DeleteDetailTag()
+        {
+            if (Presenter.SelectedSourceDetails == null)
+                return;
+
+            if (SourceDetailTagsList.SelectedItem is string tag)
+                Presenter.SelectedSourceDetails.DeleteTag(tag);
+        }
+
+        private void DeleteDetailFile()
+        {
+            if (Presenter.SelectedSourceDetails == null)
+                return;
+
+            if (SourceDetailFileGrid.SelectedItem is FileViewModel fileView)
+                Presenter.SelectedSourceDetails.DeleteFile(fileView);
+
         }
     }
 }
