@@ -12,7 +12,7 @@ namespace TrainingSourceManager.Presenters.MainWindow.ViewModels
     public class SourceTreeEntry : ITreeEntry, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
-        private SelectableSourceItem _sourceItem;
+        private readonly SelectableSourceItem _sourceItem;
         internal Data.Source Source => _sourceItem.Source;
 
         public SourceTreeEntry(SelectableSourceItem sourceItem)

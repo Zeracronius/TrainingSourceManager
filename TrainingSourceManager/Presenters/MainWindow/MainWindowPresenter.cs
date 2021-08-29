@@ -18,9 +18,8 @@ namespace TrainingSourceManager.Presenters.MainWindow
 
         public System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry> SourceTreeEntries { get; set; }
 
-        public ViewModels.SourceDetailsViewModel? SelectedSourceDetails { get; private set; }
+        public SourceDetailsPresenter? SelectedSourceDetails { get; private set; }
 
-        public bool HasChanges => _dataContext?.ChangeTracker.HasChanges() ?? false;
 
         public bool CrossNest
         {
@@ -82,7 +81,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
             includedTags.Add(currentTag);
             IEnumerable<string> tags = sources.SelectMany(x => x.Tags).Distinct();
             IEnumerable<string> unhandledTags = tags.Where(x => includedTags.Contains(x) == false);
-            if (unhandledTags.Count() > 0)
+            if (unhandledTags.Any())
             {
                 // Not reached bottom yet!
                 var result = new List<ViewModels.ITreeEntry>();
@@ -132,21 +131,11 @@ namespace TrainingSourceManager.Presenters.MainWindow
         public void SelectSource(ViewModels.SourceTreeEntry? sourceEntry, bool saveChanges)
         {
             if (saveChanges)
-                _dataContext?.SaveChanges();
-
-            if (SelectedSourceDetails != null)
-            {
-                _dataContext?.Entry(SelectedSourceDetails.Source).Reload();
-                _dataContext?.Entry(SelectedSourceDetails.Source).Collection(x => x.Files).Load();
-                _dataContext?.Entry(SelectedSourceDetails.Source).Collection(x => x.Metadata).Load();
-
-            }
-            
+                SelectedSourceDetails?.SaveChanges();
 
             if (sourceEntry != null)
             {
-                _dataContext?.Entry(sourceEntry.Source).Collection(x => x.Files).Load();
-                SelectedSourceDetails = new ViewModels.SourceDetailsViewModel(sourceEntry.Source);
+                SelectedSourceDetails = new SourceDetailsPresenter(sourceEntry.Source);
                 SelectedSourceDetails.LoadData();
             }
             else

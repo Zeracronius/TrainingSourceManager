@@ -36,11 +36,6 @@ namespace TrainingSourceManager.Interfaces
             Presenter.LoadData();
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            var x = SourceTree.Items;
-        }
-
         private void SourceTree_DragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -207,7 +202,7 @@ namespace TrainingSourceManager.Interfaces
         private void SourceTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             bool save = false;
-            if (Presenter.HasChanges)
+            if (Presenter.SelectedSourceDetails?.HasChanges ?? false)
             {
                 MessageBoxResult saveChanges = MessageBox.Show("You have unsaved changes to the currently selected source. Do you wish to save them?", "Unsaved changes", MessageBoxButton.YesNo);
                 if (saveChanges == MessageBoxResult.Yes)
@@ -224,7 +219,10 @@ namespace TrainingSourceManager.Interfaces
 
         private void SourceDetail_Cancel(object sender, RoutedEventArgs e)
         {
-            if (Presenter.HasChanges)
+            if (Presenter.SelectedSourceDetails == null)
+                return;
+
+            if (Presenter.SelectedSourceDetails.HasChanges)
             {
                 Presenter.SelectSource(SourceTree.SelectedItem as SourceTreeEntry, false);
             }
