@@ -5,13 +5,15 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace TrainingSourceManager.Presenters.MainWindow.ViewModels
 {
-    public class SourceTreeEntry: ITreeEntry, INotifyPropertyChanged
+    public class SourceTreeEntry : ITreeEntry, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
         private SelectableSourceItem _sourceItem;
+        internal Data.Source Source => _sourceItem.Source;
 
         public SourceTreeEntry(SelectableSourceItem sourceItem)
         {
@@ -25,7 +27,7 @@ namespace TrainingSourceManager.Presenters.MainWindow.ViewModels
             set => _sourceItem.Selected = value;
         }
 
-        public string Name => _sourceItem.Name;
+        public string Caption => _sourceItem.Name;
         public string Tags => String.Join(", ", _sourceItem.Tags);
     }
 }

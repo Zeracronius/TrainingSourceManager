@@ -8,6 +8,6 @@ namespace TrainingSourceManager.Presenters.MainWindow.ViewModels
 {
     public interface ITreeEntry
     {
-        public string Name { get; }
+        public string Caption { get; }
     }
 }

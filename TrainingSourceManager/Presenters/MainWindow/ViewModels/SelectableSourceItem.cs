@@ -14,6 +14,8 @@ namespace TrainingSourceManager.Presenters.MainWindow.ViewModels
         readonly Data.Source _source;
         private bool _selected;
 
+        internal Data.Source Source => _source;
+
         public SelectableSourceItem(Data.Source source)
         {
             _source = source;

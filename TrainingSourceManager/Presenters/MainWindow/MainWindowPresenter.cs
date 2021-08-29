@@ -92,7 +92,32 @@ namespace TrainingSourceManager.Presenters.MainWindow
         }
 
 
+        public void BackupData(string filepath)
+        {
+            if (_dataContext == null)
+                return;
 
+            _dataContext.Database.ExecuteSqlRaw($"BACKUP DATABASE [TrainingSourceManager] TO DISK = '{filepath}'");
+        }
+
+        public void RestoreData(string filepath)
+        {
+            if (_dataContext == null)
+                return;
+
+            _dataContext.Database.ExecuteSqlRaw($"RESTORE DATABASE [TrainingSourceManager] FROM DISK = '{filepath}' WITH REPLACE");
+            LoadData();
+        }
+
+        public void DeleteSource(ViewModels.SourceTreeEntry source)
+        {
+            using (var context = new Data.DataContext())
+            {
+                context.Sources.Remove(source.Source);
+                context.SaveChanges();
+            }
+            LoadData();
+        }
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {

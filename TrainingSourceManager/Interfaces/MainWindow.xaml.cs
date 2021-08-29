@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TrainingSourceManager.Presenters.MainWindow;
+using TrainingSourceManager.Presenters.MainWindow.ViewModels;
 
 namespace TrainingSourceManager.Interfaces
 {
@@ -56,7 +58,6 @@ namespace TrainingSourceManager.Interfaces
                 string[] filePaths = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (filePaths.Length > 0)
                 {
-                    System.Threading.Thread.Yield();
                     Presenters.AddSource.AddSourcePresenter addPresenter = new Presenters.AddSource.AddSourcePresenter(filePaths);
                     AddSource addDialog = new AddSource(addPresenter);
                     this.Dispatcher.BeginInvoke((Action)(() => 
@@ -77,6 +78,130 @@ namespace TrainingSourceManager.Interfaces
                 Mouse.SetCursor(Cursors.No);
 
             e.Handled = true;
+        }
+
+        private void ContextMenu_Unselect(object sender, RoutedEventArgs e)
+        {
+            if (SourceTree.SelectedItem != null)
+                SetSelection((ITreeEntry)SourceTree.SelectedItem, false);
+        }
+
+        private void ContextMenu_Select(object sender, RoutedEventArgs e)
+        {
+            if (SourceTree.SelectedItem != null)
+                SetSelection((ITreeEntry)SourceTree.SelectedItem, true);
+        }
+
+        private void SetSelection(ITreeEntry item, bool selected)
+        {
+            switch (item)
+            {
+                case CategoryTreeEntry category:
+                    foreach (ITreeEntry entry in category.Entries)
+                        SetSelection(entry, selected);
+                    break;
+
+                case SourceTreeEntry source:
+                    source.Selected = selected;
+                    break;
+            }
+        }
+
+        private void Selected_Export(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void Selected_Clear(object sender, RoutedEventArgs e)
+        {
+            foreach (ITreeEntry item in SourceTree.ItemsSource)
+                SetSelection(item, false);
+        }
+
+        private void Selected_SelectAll(object sender, RoutedEventArgs e)
+        {
+            foreach (ITreeEntry item in SourceTree.ItemsSource)
+                SetSelection(item, true);
+        }
+
+        private void Edit_Add(object sender, RoutedEventArgs e)
+        {
+            Presenters.AddSource.AddSourcePresenter addPresenter = new Presenters.AddSource.AddSourcePresenter();
+            AddSource addDialog = new AddSource(addPresenter);
+            if (addDialog.ShowDialog() == true)
+                Presenter.LoadData();
+        }
+
+        private void Edit_Delete(object sender, RoutedEventArgs e)
+        {
+            DeleteSelected();
+        }
+
+        private void DeleteSelected()
+        {
+            if (SourceTree.SelectedItem is SourceTreeEntry entry)
+            {
+                if (MessageBox.Show($"Are you sure you wish to delete '{entry.Caption}'") == MessageBoxResult.Yes)
+                    Presenter.DeleteSource(entry);
+            }
+        }
+
+        private void Edit_Backup(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog fileDialog = new SaveFileDialog();
+            fileDialog.Filter = "Backup (*.bak)|*.bak";
+            if (fileDialog.ShowDialog() == true)
+            {
+                Presenter.BackupData(fileDialog.FileName);
+            }
+        }
+
+        private void Edit_Restore(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Filter = "Backup (*.bak)|*.bak";
+            if (fileDialog.ShowDialog() == true)
+            {
+                Presenter.RestoreData(fileDialog.FileName);
+            }
+        }
+        private void SourceTree_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            TreeViewItem? treeViewItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
+
+            if (treeViewItem != null)
+            {
+                treeViewItem.Focus();
+
+                switch (SourceTree.SelectedItem)
+                {
+                    case SourceTreeEntry _:
+                        SourceTree.ContextMenu = SourceTree.Resources["SourceItemContextMenu"] as ContextMenu;
+                        break;
+
+                    case CategoryTreeEntry _:
+                        SourceTree.ContextMenu = SourceTree.Resources["CategoryContextMenu"] as ContextMenu;
+                        break;
+                }
+            }
+            else
+            {
+                SourceTree.ContextMenu = null;
+            }
+
+            e.Handled = true;
+        }
+
+        static TreeViewItem? VisualUpwardSearch(DependencyObject? source)
+        {
+            while (source != null && (source is TreeViewItem) == false)
+                source = VisualTreeHelper.GetParent(source);
+
+            return source as TreeViewItem;
+        }
+        private void ContextMenu_Delete(object sender, RoutedEventArgs e)
+        {
+            DeleteSelected();
         }
     }
 }

@@ -7,7 +7,7 @@
         xmlns:viewModels="clr-namespace:TrainingSourceManager.Presenters.MainWindow.ViewModels"
         xmlns:ext="clr-namespace:TrainingSourceManager"
         mc:Ignorable="d"
-        Title="MainWindow" 
+        Title="Training Source Manager" 
         Height="450" 
         Width="800" 
         Loaded="Window_Loaded"
@@ -18,30 +18,51 @@
         <ToolBarPanel DockPanel.Dock="Top">
             <ToolBar ToolBarTray.IsLocked="True" >
                 <Menu ToolBar.OverflowMode="Never">
-                    <MenuItem Header="File" VerticalContentAlignment="Center" Click="MenuItem_Click" />
-                    <MenuItem Header="New" VerticalContentAlignment="Center" />
+                    <MenuItem Header="Edit" VerticalContentAlignment="Center" >
+                        <MenuItem Header="Add" Click="Edit_Add"/>
+                        <MenuItem Header="Delete" Click="Edit_Delete"/>
+                        <MenuItem Header="Backup" Click="Edit_Backup"/>
+                        <MenuItem Header="Restore" Click="Edit_Restore" />
+                    </MenuItem>
+                    <MenuItem Header="Selected" VerticalContentAlignment="Center" >
+                        <MenuItem Header="Select all" Click="Selected_SelectAll"/>
+                        <MenuItem Header="Clear" Click="Selected_Clear"/>
+                        <MenuItem Header="Export" Click="Selected_Export"/>
+                    </MenuItem>
                     <CheckBox Name="CrossNestCheckbox" Content="Cross-Nest" IsChecked="{Binding CrossNest}" />
                 </Menu>
             </ToolBar>
         </ToolBarPanel>
 
-        <TreeView Name="SourceTree" Margin="0,33,0,0" HorizontalContentAlignment="Stretch" ItemsSource="{Binding SourceTreeEntries}" BorderThickness="0" Grid.ColumnSpan="4" Drop="SourceTree_Drop" GiveFeedback="SourceTree_GiveFeedback" AllowDrop="True" DragOver="SourceTree_DragOver" >
+        <TreeView Name="SourceTree" Margin="0,33,0,0" HorizontalContentAlignment="Stretch" ItemsSource="{Binding SourceTreeEntries}" BorderThickness="0" Grid.ColumnSpan="4" Drop="SourceTree_Drop" GiveFeedback="SourceTree_GiveFeedback" AllowDrop="True" DragOver="SourceTree_DragOver" PreviewMouseRightButtonDown="SourceTree_PreviewMouseRightButtonDown" >
             <TreeView.Resources>
-                    <HierarchicalDataTemplate DataType="{x:Type viewModels:CategoryTreeEntry}" ItemsSource="{Binding Entries}">
-                        <StackPanel Orientation="Horizontal">
-                            <Label VerticalAlignment="Center" FontFamily="WingDings" Content="1"/>
-                            <TextBlock Text="{Binding Name}" />
-                        </StackPanel>
-                    </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type viewModels:CategoryTreeEntry}" ItemsSource="{Binding Entries}">
+                    <StackPanel Orientation="Horizontal">
+                        <Label VerticalAlignment="Center" FontFamily="WingDings" Content="1"/>
+                        <TextBlock Text="{Binding Caption}" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
                 <DataTemplate DataType="{x:Type viewModels:SourceTreeEntry}">
                     <WrapPanel Orientation="Horizontal">
                         <CheckBox IsChecked="{Binding Selected}" VerticalContentAlignment="Center" />
                         <Label VerticalAlignment="Center" FontFamily="WingDings" Content="2"/>
-                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock Text="{Binding Caption}" />
                     </WrapPanel>
                 </DataTemplate>
-                </TreeView.Resources>
-            </TreeView>
+
+                <ContextMenu x:Key="CategoryContextMenu">
+                    <MenuItem Header="Select" Click="ContextMenu_Select" />
+                    <MenuItem Header="Unselect" Click="ContextMenu_Unselect" />
+                </ContextMenu>
+                <ContextMenu x:Key="SourceItemContextMenu">
+                    <MenuItem Header="Select" Click="ContextMenu_Select" />
+                    <MenuItem Header="Unselect" Click="ContextMenu_Unselect" />
+                    <Separator />
+                    <MenuItem Header="Delete" Click="ContextMenu_Delete" />
+                </ContextMenu>
+
+            </TreeView.Resources>
+        </TreeView>
 
     </Grid>
 </Window>
