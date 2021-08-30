@@ -50,15 +50,25 @@ namespace TrainingSourceManager.Data
         [StringLength(200)]
         public string Name { get; set; }
 
-        protected FileData? FileData { get; set; }
+        internal FileData? FileData { get; set; }
 
         [ForeignKey(nameof(SourceId))]
         public Source Source { get; set; }
 
 
-        public FileInfo Export()
+        public FileInfo? Export(string directoryPath)
         {
-            return new FileInfo("");
+            if (FileData == null)
+                return null;
+
+            FileInfo file = new FileInfo(Path.Combine(directoryPath, Name) + "." + Extension);
+
+            using (FileStream stream = System.IO.File.Create(file.FullName))
+            {
+                stream.Write(FileData.Data);
+                stream.Flush();
+                return file;
+            }
         }
     }
 }

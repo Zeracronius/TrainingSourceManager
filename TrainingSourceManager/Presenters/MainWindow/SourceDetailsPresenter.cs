@@ -122,5 +122,15 @@ namespace TrainingSourceManager.Presenters.MainWindow
         {
             _dataContext?.SaveChanges();
         }
+
+        internal System.IO.FileInfo? ExportFile(FileViewModel fileView, string directoryPath)
+        {
+            if (_dataContext == null)
+                return null;
+
+            Data.File file = fileView.File;
+            _dataContext.Entry(file).Reference(x => x.FileData).Load();
+            return file.Export(directoryPath);
+        }
     }
 }

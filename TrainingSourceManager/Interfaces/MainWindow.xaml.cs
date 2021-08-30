@@ -258,5 +258,63 @@ namespace TrainingSourceManager.Interfaces
                 Presenter.SelectedSourceDetails.DeleteFile(fileView);
 
         }
+
+        private void SourceDetailFileGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (Presenter.SelectedSourceDetails == null)
+                return;
+
+            if (SourceDetailFileGrid.SelectedItem is FileViewModel fileView)
+            {
+                System.IO.FileInfo? file = Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
+                if (file != null)
+                {
+                    var p = new System.Diagnostics.Process();
+                    p.StartInfo = new System.Diagnostics.ProcessStartInfo(file.FullName)
+                    {
+                        UseShellExecute = true
+                    };
+                    p.Start();
+                }
+            }
+        }
+
+        private void SourceDetailFileGrid_DragOver(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void SourceDetailFileGrid_Drop(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void SourceDetailFileGrid_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+        {
+
+        }
+
+        private void SourceDetailFileGrid_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (Presenter.SelectedSourceDetails == null)
+                return;
+
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                List<string> files = new List<string>();
+                foreach (FileViewModel fileView in SourceDetailFileGrid.SelectedItems)
+                {
+                    System.IO.FileInfo? file = Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
+                    if (file != null)
+                        files.Add(file.FullName);
+                }
+
+                if (files.Count > 0)
+                {
+                    DataObject dataObject = new DataObject(DataFormats.FileDrop, files.ToArray());
+                    DragDrop.DoDragDrop(SourceDetailFileGrid, dataObject, DragDropEffects.Copy);
+                }
+            }
+        }
     }
 }
