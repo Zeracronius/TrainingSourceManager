@@ -91,9 +91,14 @@ namespace TrainingSourceManager.Interfaces
             }
         }
 
-        private void Selected_Export(object sender, RoutedEventArgs e)
+        private async void Selected_Export(object sender, RoutedEventArgs e)
         {
-            
+            using (System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                dialog.AutoUpgradeEnabled = true;
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    await Presenter.ExportSelectedSources(dialog.SelectedPath);
+            }
         }
 
         private void Selected_Clear(object sender, RoutedEventArgs e)
@@ -340,9 +345,11 @@ namespace TrainingSourceManager.Interfaces
             SourceDetailFileGrid.IsEnabled = true;
         }
 
-        private void CrossNest_Click(object sender, RoutedEventArgs e)
+        private async void CrossNest_Click(object sender, RoutedEventArgs e)
         {
-            RefreshData();
+            SourceTree.IsEnabled = false;
+            await Presenter.Refresh();
+            SourceTree.IsEnabled = true;
         }
 
         private void SourceDetail_TagAdd_Click(object sender, RoutedEventArgs e)
@@ -372,6 +379,11 @@ namespace TrainingSourceManager.Interfaces
         {
             if (e.Key == Key.Enter)
                 AddSourceDetailTag();
+        }
+
+        private void Reload_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshData();
         }
     }
 }

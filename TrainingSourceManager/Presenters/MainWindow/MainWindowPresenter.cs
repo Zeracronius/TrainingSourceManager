@@ -11,7 +11,8 @@ namespace TrainingSourceManager.Presenters.MainWindow
 {
     public class MainWindowPresenter : INotifyPropertyChanged
     {
-        Data.DataContext? _dataContext;
+        private Data.DataContext? _dataContext;
+        private List<ViewModels.SelectableSourceItem> _sourceItems;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -25,6 +26,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
         public MainWindowPresenter()
         {
             SourceTreeEntries = new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>();
+            _sourceItems = new List<ViewModels.SelectableSourceItem>();
         }
 
         public async Task LoadData()
@@ -37,32 +39,37 @@ namespace TrainingSourceManager.Presenters.MainWindow
 
 
             List<Data.Source> sources = await _dataContext.Sources.Include(x => x.Metadata).ToListAsync();
-            IEnumerable<ViewModels.SelectableSourceItem> sourceItems = sources.Select(x => new ViewModels.SelectableSourceItem(x)).ToList();
+
+            _sourceItems.Clear();
+            _sourceItems.AddRange(sources.Select(x => new ViewModels.SelectableSourceItem(x)));
+            await Refresh();
+        }
+
+        public async Task Refresh()
+        {
 
             await Task.Run(() =>
             {
+                IEnumerable<string> tags = _sourceItems.SelectMany(x => x.Tags).Distinct();
 
                 List<ViewModels.ITreeEntry> list = new List<ViewModels.ITreeEntry>();
                 if (CrossNest)
                 {
-                    IEnumerable<string> tags = sources.SelectMany(x => x.Metadata.Where(x => x.Type == Data.MetadataType.Tag).Select(x => x.Value)).Distinct();
-
+                    HashSet<string> includedTags = new HashSet<string>();
                     foreach (string tag in tags)
                     {
-                        HashSet<string> includedTags = new HashSet<string>();
-                        list.Add(new ViewModels.CategoryTreeEntry(NestTag(includedTags, tag, sourceItems.Where(x => x.Tags.Contains(tag))), tag));
+                        includedTags.Clear();
+                        list.Add(new ViewModels.CategoryTreeEntry(NestTag(includedTags, tag, _sourceItems.Where(x => x.Tags.Contains(tag))), tag));
                     }
                 }
                 else
                 {
-                    IEnumerable<string> tags = sources.SelectMany(x => x.Metadata.Where(x => x.Type == Data.MetadataType.Tag).Select(x => x.Value)).Distinct();
-
                     foreach (string tag in tags)
-                        list.Add(new ViewModels.CategoryTreeEntry(sourceItems.Where(x => x.Tags.Contains(tag)).Select(x => new ViewModels.SourceTreeEntry(x)), tag));
+                        list.Add(new ViewModels.CategoryTreeEntry(_sourceItems.Where(x => x.Tags.Contains(tag)).Select(x => new ViewModels.SourceTreeEntry(x)), tag));
                 }
 
                 list = list.OrderBy(x => x.Caption).ToList();
-                list.AddRange(sourceItems.Where(x => x.Tags.Length == 0).Select(x => new ViewModels.SourceTreeEntry(x)));
+                list.AddRange(_sourceItems.Where(x => x.Tags.Length == 0).Select(x => new ViewModels.SourceTreeEntry(x)));
 
                 SourceTreeEntries = new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>(list);
 
@@ -138,6 +145,52 @@ namespace TrainingSourceManager.Presenters.MainWindow
                 SelectedSourceDetails = null;
 
             OnPropertyChanged(nameof(SelectedSourceDetails));
+        }
+
+
+
+
+
+        public Task ExportSelectedSources(string directoryPath)
+        {
+            if (_dataContext == null)
+                return Task.CompletedTask;
+
+            return Task.Run(() =>
+            {
+                List<Data.Source> selected = new List<Data.Source>();
+                GetSelected(SourceTreeEntries, ref selected);
+
+                
+                List<Task> exportTasks = new List<Task>();
+                foreach (Data.Source source in selected)
+                {
+                    _dataContext.Entry(source).Collection(x => x.Files).Query().Include(x => x.FileData).Load();
+                    foreach (Data.File file in source.Files)
+                        exportTasks.Add(file.Export(directoryPath));
+                }
+
+                Task.WaitAll(exportTasks.ToArray());
+            });
+        }
+
+        
+        private void GetSelected(IEnumerable<ViewModels.ITreeEntry> items, ref List<Data.Source> selected)
+        {
+            foreach (ViewModels.ITreeEntry entry in items)
+            {
+                switch (entry)
+                {
+                    case ViewModels.CategoryTreeEntry category:
+                            GetSelected(category.Entries, ref selected);
+                        break;
+
+                    case ViewModels.SourceTreeEntry source:
+                        if (source.Selected && selected.Contains(source.Source) == false)
+                            selected.Add(source.Source);
+                        break;
+                }
+            }
         }
     }
 }

@@ -26,7 +26,8 @@
                 <MenuItem Header="_Clear" Click="Selected_Clear"/>
                 <MenuItem Header="_Export" Click="Selected_Export"/>
             </MenuItem>
-            <MenuItem Header="Cross-Nest" IsCheckable="True" IsChecked="{Binding CrossNest}" Click="CrossNest_Click" />
+            <MenuItem Header="_Reload" Click="Reload_Click"  />
+            <MenuItem Header="_Cross-Nest" IsCheckable="True" IsChecked="{Binding CrossNest}" Click="CrossNest_Click" />
         </Menu>
         <Grid>
             <Grid.ColumnDefinitions>
