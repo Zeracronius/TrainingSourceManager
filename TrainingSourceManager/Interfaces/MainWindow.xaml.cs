@@ -33,7 +33,7 @@ namespace TrainingSourceManager.Interfaces
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Presenter.LoadData();
+            RefreshData();
         }
 
         private void SourceTree_DragOver(object sender, DragEventArgs e)
@@ -58,7 +58,7 @@ namespace TrainingSourceManager.Interfaces
                     this.Dispatcher.BeginInvoke((Action)(() => 
                     {
                         if (addDialog.ShowDialog() == true)
-                            Presenter.LoadData();
+                            RefreshData();
                     }));
                 }
             }
@@ -124,7 +124,14 @@ namespace TrainingSourceManager.Interfaces
             Presenters.AddSource.AddSourcePresenter addPresenter = new Presenters.AddSource.AddSourcePresenter();
             AddSource addDialog = new AddSource(addPresenter);
             if (addDialog.ShowDialog() == true)
-                Presenter.LoadData();
+                RefreshData();
+        }
+
+        private async void RefreshData()
+        {
+            SourceTree.IsEnabled = false;
+            await Presenter.LoadData();
+            SourceTree.IsEnabled = true;
         }
 
         private void Edit_Delete(object sender, RoutedEventArgs e)
@@ -132,33 +139,33 @@ namespace TrainingSourceManager.Interfaces
             DeleteSelected();
         }
 
-        private void DeleteSelected()
+        private async void DeleteSelected()
         {
             if (SourceTree.SelectedItem is SourceTreeEntry entry)
             {
                 if (MessageBox.Show($"Are you sure you wish to delete '{entry.Caption}'") == MessageBoxResult.Yes)
-                    Presenter.DeleteSource(entry);
+                    await Presenter.DeleteSource(entry);
             }
         }
 
-        private void Edit_Backup(object sender, RoutedEventArgs e)
+        private async void Edit_Backup(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog fileDialog = new SaveFileDialog();
-            fileDialog.Filter = "Backup (*.bak)|*.bak";
-            if (fileDialog.ShowDialog() == true)
+            SaveFileDialog fileDialog = new SaveFileDialog
             {
-                Presenter.BackupData(fileDialog.FileName);
-            }
+                Filter = "Backup (*.bak)|*.bak"
+            };
+            if (fileDialog.ShowDialog() == true)
+                await Presenter.BackupData(fileDialog.FileName);
         }
 
-        private void Edit_Restore(object sender, RoutedEventArgs e)
+        private async void Edit_Restore(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog fileDialog = new OpenFileDialog();
-            fileDialog.Filter = "Backup (*.bak)|*.bak";
-            if (fileDialog.ShowDialog() == true)
+            OpenFileDialog fileDialog = new OpenFileDialog
             {
-                Presenter.RestoreData(fileDialog.FileName);
-            }
+                Filter = "Backup (*.bak)|*.bak"
+            };
+            if (fileDialog.ShowDialog() == true)
+                await Presenter.RestoreData(fileDialog.FileName);
         }
         private void SourceTree_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -276,10 +283,12 @@ namespace TrainingSourceManager.Interfaces
                 System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
                 if (file != null)
                 {
-                    var p = new System.Diagnostics.Process();
-                    p.StartInfo = new System.Diagnostics.ProcessStartInfo(file.FullName)
+                    var p = new System.Diagnostics.Process()
                     {
-                        UseShellExecute = true
+                        StartInfo = new System.Diagnostics.ProcessStartInfo(file.FullName)
+                        {
+                            UseShellExecute = true
+                        }
                     };
                     p.Start();
                 }
@@ -322,6 +331,11 @@ namespace TrainingSourceManager.Interfaces
                     DragDrop.DoDragDrop(SourceDetailFileGrid, dataObject, DragDropEffects.Copy);
                 }
             }
+        }
+
+        private void CrossNest_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshData();
         }
     }
 }
