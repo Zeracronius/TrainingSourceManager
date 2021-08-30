@@ -118,7 +118,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
             using (var context = new Data.DataContext())
             {
                 context.Sources.Remove(source.Source);
-                context.SaveChanges();
+                context.SaveChangesAsync();
             }
             LoadData();
         }

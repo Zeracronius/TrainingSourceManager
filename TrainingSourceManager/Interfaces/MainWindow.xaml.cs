@@ -240,33 +240,33 @@ namespace TrainingSourceManager.Interfaces
                 DeleteDetailTag();
         }
 
-        private void DeleteDetailTag()
+        private async void DeleteDetailTag()
         {
             if (Presenter.SelectedSourceDetails == null)
                 return;
 
             if (SourceDetailTagsList.SelectedItem is string tag)
-                Presenter.SelectedSourceDetails.DeleteTag(tag);
+                await Presenter.SelectedSourceDetails.DeleteTag(tag);
         }
 
-        private void DeleteDetailFile()
+        private async void DeleteDetailFile()
         {
             if (Presenter.SelectedSourceDetails == null)
                 return;
 
             if (SourceDetailFileGrid.SelectedItem is FileViewModel fileView)
-                Presenter.SelectedSourceDetails.DeleteFile(fileView);
+                await Presenter.SelectedSourceDetails.DeleteFile(fileView);
 
         }
 
-        private void SourceDetailFileGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private async void SourceDetailFileGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (Presenter.SelectedSourceDetails == null)
                 return;
 
             if (SourceDetailFileGrid.SelectedItem is FileViewModel fileView)
             {
-                System.IO.FileInfo? file = Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
+                System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
                 if (file != null)
                 {
                     var p = new System.Diagnostics.Process();
@@ -294,7 +294,7 @@ namespace TrainingSourceManager.Interfaces
 
         }
 
-        private void SourceDetailFileGrid_MouseMove(object sender, MouseEventArgs e)
+        private async void SourceDetailFileGrid_MouseMove(object sender, MouseEventArgs e)
         {
             if (Presenter.SelectedSourceDetails == null)
                 return;
@@ -304,7 +304,7 @@ namespace TrainingSourceManager.Interfaces
                 List<string> files = new List<string>();
                 foreach (FileViewModel fileView in SourceDetailFileGrid.SelectedItems)
                 {
-                    System.IO.FileInfo? file = Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
+                    System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
                     if (file != null)
                         files.Add(file.FullName);
                 }

@@ -56,19 +56,21 @@ namespace TrainingSourceManager.Data
         public Source Source { get; set; }
 
 
-        public FileInfo? Export(string directoryPath)
+        public Task<FileInfo?> Export(string directoryPath)
         {
             if (FileData == null)
-                return null;
+                return Task.FromResult<FileInfo?>(null);
 
-            FileInfo file = new FileInfo(Path.Combine(directoryPath, Name) + "." + Extension);
-
-            using (FileStream stream = System.IO.File.Create(file.FullName))
+            return Task.Run<FileInfo?>(() =>
             {
-                stream.Write(FileData.Data);
-                stream.Flush();
+                FileInfo file = new FileInfo(Path.Combine(directoryPath, Name) + "." + Extension);
+                using (FileStream stream = System.IO.File.Create(file.FullName))
+                {
+                    stream.Write(FileData.Data);
+                    stream.Flush();
+                }
                 return file;
-            }
+            });
         }
     }
 }

@@ -41,29 +41,32 @@ namespace TrainingSourceManager.Presenters.MainWindow
         }
 
 
-        public void LoadData()
+        public async Task LoadData()
         {
             _dataContext?.Dispose();
             _dataContext = new Data.DataContext();
-            _source = _dataContext.Sources.Include(x => x.Files)
-                                          .Include(x => x.Metadata)
-                                          .FirstOrDefault(x => x.Id == _sourceId);
-            RefreshCollections();
+            _source = await _dataContext.Sources.Include(x => x.Files)
+                                                .Include(x => x.Metadata)
+                                                .FirstOrDefaultAsync(x => x.Id == _sourceId);
+            await RefreshCollections();
         }
 
-        public void RefreshCollections()
+        public async Task RefreshCollections()
         {
             if (_source == null)
                 return;
 
-            Files = new ObservableCollection<FileViewModel>(_source.Files.Select(x => new FileViewModel(x)));
-            Tags = new ObservableCollection<string>(_source.Metadata.Where(x => x.Type == Data.MetadataType.Tag).Select(x => x.Value));
+            await Task.Run(() =>
+            {
+                Files = new ObservableCollection<FileViewModel>(_source.Files.Select(x => new FileViewModel(x)));
+                Tags = new ObservableCollection<string>(_source.Metadata.Where(x => x.Type == Data.MetadataType.Tag).Select(x => x.Value));
+            });
 
             OnPropertyChanged(nameof(Files));
             OnPropertyChanged(nameof(Tags));
         }
 
-        public void DeleteTag(string tag)
+        public async Task DeleteTag(string tag)
         {
             if (String.IsNullOrWhiteSpace(tag) || _source == null)
                 return;
@@ -74,12 +77,12 @@ namespace TrainingSourceManager.Presenters.MainWindow
                 if (metaTag != null)
                 {
                     _source.Metadata.Remove(metaTag);
-                    RefreshCollections();
+                    await RefreshCollections();
                 }
             }
         }
 
-        public void AddTag(string tag)
+        public async Task AddTag(string tag)
         {
             if (String.IsNullOrWhiteSpace(tag) || _source == null)
                 return;
@@ -87,20 +90,20 @@ namespace TrainingSourceManager.Presenters.MainWindow
             if (Tags.Contains(tag) == false)
             {
                 _source.AddMetadata(Data.MetadataType.Tag, tag);
-                RefreshCollections();
+                await RefreshCollections();
             }
         }
 
-        public void DeleteFile(FileViewModel file)
+        public async Task DeleteFile(FileViewModel file)
         {
             if (_source == null)
                 return;
 
             _source.Files.Remove(file.File);
-            RefreshCollections();
+            await RefreshCollections();
         }
 
-        public void AddFile(string path)
+        public async Task AddFile(string path)
         {
             if (_source == null)
                 return;
@@ -109,7 +112,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
             if (fileInfo.Exists)
             {
                 _source.AddFile(fileInfo);
-                RefreshCollections();
+                await RefreshCollections();
             }
         }
 
@@ -123,14 +126,14 @@ namespace TrainingSourceManager.Presenters.MainWindow
             _dataContext?.SaveChanges();
         }
 
-        internal System.IO.FileInfo? ExportFile(FileViewModel fileView, string directoryPath)
+        internal async Task<System.IO.FileInfo?> ExportFile(FileViewModel fileView, string directoryPath)
         {
             if (_dataContext == null)
                 return null;
 
             Data.File file = fileView.File;
-            _dataContext.Entry(file).Reference(x => x.FileData).Load();
-            return file.Export(directoryPath);
+            await _dataContext.Entry(file).Reference(x => x.FileData).LoadAsync();
+            return await file.Export(directoryPath);
         }
     }
 }
