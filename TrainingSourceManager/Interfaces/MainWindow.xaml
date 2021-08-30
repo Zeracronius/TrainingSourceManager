@@ -61,7 +61,7 @@
                 </TreeView.Resources>
             </TreeView>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="3" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns" />
-            <Grid Grid.Column="2" DataContext="{Binding SelectedSourceDetails}">
+            <Grid Grid.Column="2" DataContext="{Binding SelectedSourceDetails}" Name="SourceDetailGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="0.5*"/>

@@ -209,12 +209,12 @@ namespace TrainingSourceManager.Interfaces
                     save = true;
             }
 
-            Presenter.SelectSource(SourceTree.SelectedItem as SourceTreeEntry, save);
+            LoadDetails(save);
         }
 
         private void SourceDetail_Save(object sender, RoutedEventArgs e)
         {
-            Presenter.SelectSource(SourceTree.SelectedItem as SourceTreeEntry, true);
+            LoadDetails(true);
         }
 
         private void SourceDetail_Cancel(object sender, RoutedEventArgs e)
@@ -224,8 +224,15 @@ namespace TrainingSourceManager.Interfaces
 
             if (Presenter.SelectedSourceDetails.HasChanges)
             {
-                Presenter.SelectSource(SourceTree.SelectedItem as SourceTreeEntry, false);
+                LoadDetails(false);
             }
+        }
+
+        private async void LoadDetails(bool saveChanges)
+        {
+            SourceDetailGrid.IsEnabled = false;
+            await Presenter.SelectSource(SourceTree.SelectedItem as SourceTreeEntry, saveChanges);
+            SourceDetailGrid.IsEnabled = true;
         }
 
         private void SourceDetail_FileGrid_KeyUp(object sender, KeyEventArgs e)

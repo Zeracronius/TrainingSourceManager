@@ -128,15 +128,15 @@ namespace TrainingSourceManager.Presenters.MainWindow
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void SelectSource(ViewModels.SourceTreeEntry? sourceEntry, bool saveChanges)
+        public async Task SelectSource(ViewModels.SourceTreeEntry? sourceEntry, bool saveChanges)
         {
-            if (saveChanges)
-                SelectedSourceDetails?.SaveChanges();
+            if (saveChanges && SelectedSourceDetails != null)
+                await SelectedSourceDetails.SaveChanges();
 
             if (sourceEntry != null)
             {
                 SelectedSourceDetails = new SourceDetailsPresenter(sourceEntry.Source);
-                SelectedSourceDetails.LoadData();
+                await SelectedSourceDetails.LoadData();
             }
             else
                 SelectedSourceDetails = null;

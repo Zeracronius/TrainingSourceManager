@@ -121,9 +121,9 @@ namespace TrainingSourceManager.Presenters.MainWindow
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        internal void SaveChanges()
+        internal Task SaveChanges()
         {
-            _dataContext?.SaveChanges();
+            return _dataContext?.SaveChangesAsync() ?? Task.CompletedTask;
         }
 
         internal async Task<System.IO.FileInfo?> ExportFile(FileViewModel fileView, string directoryPath)
