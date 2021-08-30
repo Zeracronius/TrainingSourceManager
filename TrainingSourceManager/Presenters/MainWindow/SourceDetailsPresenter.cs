@@ -84,8 +84,12 @@ namespace TrainingSourceManager.Presenters.MainWindow
 
         public async Task AddTag(string tag)
         {
-            if (String.IsNullOrWhiteSpace(tag) || _source == null)
+            if (String.IsNullOrWhiteSpace(tag) || _source == null || _dataContext == null)
                 return;
+
+            string[] existingTags = _dataContext.Sources.SelectMany(x => x.Metadata.Where(y => y.Type == Data.MetadataType.Tag).Select(y => y.Value)).Distinct().ToArray();
+            string? existingTag = existingTags.FirstOrDefault(x => x.Equals(tag, StringComparison.OrdinalIgnoreCase));
+            tag = existingTag ?? tag;
 
             if (Tags.Contains(tag) == false)
             {

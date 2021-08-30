@@ -1,5 +1,4 @@
 ﻿Source details.
 Edit data.
 Export files.
-Adding tags should detect existing matching tag and copy that phrasing.
 Context menus everywhere.

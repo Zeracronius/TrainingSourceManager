@@ -111,8 +111,12 @@ namespace TrainingSourceManager.Presenters.AddSource
                         source.AddFile(file);
                 }
 
+                string[] existingTags = context.Sources.SelectMany(x => x.Metadata.Where(y => y.Type == Data.MetadataType.Tag).Select(y => y.Value)).Distinct().ToArray();
                 foreach (string tag in Tags)
-                    source.AddMetadata(Data.MetadataType.Tag, tag);
+                {
+                    string? existingTag = existingTags.FirstOrDefault(x => x.Equals(tag, StringComparison.OrdinalIgnoreCase));
+                    source.AddMetadata(Data.MetadataType.Tag, existingTag ?? tag);
+                }
 
                 context.Sources.Add(source);
                 context.SaveChanges();

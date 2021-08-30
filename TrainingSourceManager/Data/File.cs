@@ -23,6 +23,10 @@ namespace TrainingSourceManager.Data
             Extension = file.Extension.ToLower().TrimStart('.');
             Length = file.Length;
             Name = Path.GetFileNameWithoutExtension(file.FullName);
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+            foreach (char invalidChar in invalidChars)
+                Name = Name.Replace(invalidChar.ToString(), "");
+
 
             Byte[] bytes = System.IO.File.ReadAllBytes(file.FullName);
             FileData = new FileData(this, bytes);

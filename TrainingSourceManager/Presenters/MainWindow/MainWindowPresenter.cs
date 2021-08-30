@@ -61,6 +61,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
                         list.Add(new ViewModels.CategoryTreeEntry(sourceItems.Where(x => x.Tags.Contains(tag)).Select(x => new ViewModels.SourceTreeEntry(x)), tag));
                 }
 
+                list = list.OrderBy(x => x.Caption).ToList();
                 list.AddRange(sourceItems.Where(x => x.Tags.Length == 0).Select(x => new ViewModels.SourceTreeEntry(x)));
 
                 SourceTreeEntries = new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>(list);

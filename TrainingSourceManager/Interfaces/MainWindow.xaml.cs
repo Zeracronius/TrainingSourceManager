@@ -239,7 +239,9 @@ namespace TrainingSourceManager.Interfaces
         {
             SourceDetailGrid.IsEnabled = false;
             await Presenter.SelectSource(SourceTree.SelectedItem as SourceTreeEntry, saveChanges);
-            SourceDetailGrid.IsEnabled = true;
+
+            if (Presenter.SelectedSourceDetails != null)
+                SourceDetailGrid.IsEnabled = true;
         }
 
         private void SourceDetail_FileGrid_KeyUp(object sender, KeyEventArgs e)
@@ -336,6 +338,35 @@ namespace TrainingSourceManager.Interfaces
         private void CrossNest_Click(object sender, RoutedEventArgs e)
         {
             RefreshData();
+        }
+
+        private void SourceDetail_TagAdd_Click(object sender, RoutedEventArgs e)
+        {
+            AddSourceDetailTag();
+        }
+
+        private async void AddSourceDetailTag()
+        {
+            if (Presenter.SelectedSourceDetails == null)
+                return;
+
+            string tag = SourceDetail_TagTextbox.Text;
+            if (String.IsNullOrWhiteSpace(tag) == false)
+            {
+                await Presenter.SelectedSourceDetails.AddTag(tag);
+                SourceDetail_TagTextbox.Text = null;
+            }
+        }
+
+        private void SourceDetail_TagRemove_Click(object sender, RoutedEventArgs e)
+        {
+            DeleteDetailTag();
+        }
+
+        private void SourceDetail_TagTextbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                AddSourceDetailTag();
         }
     }
 }

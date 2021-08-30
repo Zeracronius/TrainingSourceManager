@@ -44,7 +44,7 @@
                     </HierarchicalDataTemplate>
                     <DataTemplate DataType="{x:Type viewModels:SourceTreeEntry}">
                         <WrapPanel Orientation="Horizontal">
-                            <CheckBox IsChecked="{Binding Selected}" VerticalContentAlignment="Center" />
+                            <CheckBox IsChecked="{Binding Selected}" VerticalContentAlignment="Center" IsTabStop="False" />
                             <Label  VerticalAlignment="Stretch" VerticalContentAlignment="Center" Content="{Binding Caption}" Margin="0,0,0,1"/>
                         </WrapPanel>
                     </DataTemplate>
@@ -60,8 +60,8 @@
                     </ContextMenu>
                 </TreeView.Resources>
             </TreeView>
-            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="3" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns" />
-            <Grid Grid.Column="2" DataContext="{Binding SelectedSourceDetails}" Name="SourceDetailGrid">
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" IsTabStop="False" Grid.RowSpan="3" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns" />
+            <Grid Grid.Column="2" DataContext="{Binding SelectedSourceDetails}" Name="SourceDetailGrid" IsEnabled="False">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="0.5*"/>
@@ -73,13 +73,20 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <GroupBox Grid.Row="1" Grid.ColumnSpan="2" Header="Tags">
-                    <ListBox Name="SourceDetailTagsList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Tags}" KeyUp="SourceDetail_TagList_KeyUp" >
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                    </ListBox>
+                    <DockPanel>
+                        <Menu DockPanel.Dock="Top">
+                            <TextBox Width="100" Name="SourceDetail_TagTextbox" KeyDown="SourceDetail_TagTextbox_KeyDown" />
+                            <MenuItem Header="Add" Name="SourceDetail_TagAdd" Click="SourceDetail_TagAdd_Click" />
+                            <MenuItem Header="Remove" Name="SourceDetail_TagRemove" Click="SourceDetail_TagRemove_Click" />
+                        </Menu>
+                        <ListBox Name="SourceDetailTagsList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Tags}" KeyUp="SourceDetail_TagList_KeyUp" >
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                        </ListBox>
+                    </DockPanel>
                 </GroupBox>
                 <GroupBox Header="Files" Grid.Row="2" Grid.ColumnSpan="2" >
                     <DataGrid Name="SourceDetailFileGrid" ItemsSource="{Binding Files}" AutoGenerateColumns="False" IsReadOnly="True" KeyUp="SourceDetail_FileGrid_KeyUp" MouseDoubleClick="SourceDetailFileGrid_MouseDoubleClick" DragOver="SourceDetailFileGrid_DragOver" Drop="SourceDetailFileGrid_Drop" GiveFeedback="SourceDetailFileGrid_GiveFeedback" MouseMove="SourceDetailFileGrid_MouseMove" >
