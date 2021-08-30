@@ -1,4 +1,2 @@
-﻿Source details.
-Edit data.
-Export files.
+﻿Export files.
 Context menus everywhere.

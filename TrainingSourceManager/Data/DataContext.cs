@@ -19,6 +19,7 @@ namespace TrainingSourceManager.Data
             if (optionsBuilder.IsConfigured == false)
             {
                 optionsBuilder.UseSqlServer(@"Server=(LocalDB)\MSSQLLocalDB;Database=TrainingSourceManager;Integrated Security=true;");
+                optionsBuilder.LogTo((string x) => System.Diagnostics.Debug.WriteLine(x));
                 base.OnConfiguring(optionsBuilder);
             }
         }

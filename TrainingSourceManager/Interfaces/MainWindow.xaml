@@ -34,7 +34,7 @@
                 <ColumnDefinition Width="3"/>
                 <ColumnDefinition Width="250" />
             </Grid.ColumnDefinitions>
-            <TreeView Name="SourceTree" HorizontalContentAlignment="Stretch" ItemsSource="{Binding SourceTreeEntries}" BorderThickness="0" Drop="SourceTree_Drop" GiveFeedback="SourceTree_GiveFeedback" AllowDrop="True" DragOver="SourceTree_DragOver" PreviewMouseRightButtonDown="SourceTree_PreviewMouseRightButtonDown" Margin="0,0,5,0" Grid.RowSpan="3" SelectedItemChanged="SourceTree_SelectedItemChanged" >
+            <TreeView Name="SourceTree" HorizontalContentAlignment="Stretch" ItemsSource="{Binding SourceTreeEntries}" BorderThickness="0" Drop="SourceTree_Drop" AllowDrop="True" DragOver="SourceTree_DragOver" PreviewMouseRightButtonDown="SourceTree_PreviewMouseRightButtonDown" Margin="0,0,5,0" Grid.RowSpan="3" SelectedItemChanged="SourceTree_SelectedItemChanged" >
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type viewModels:CategoryTreeEntry}" ItemsSource="{Binding Entries}">
                         <StackPanel Orientation="Horizontal">
@@ -89,7 +89,7 @@
                     </DockPanel>
                 </GroupBox>
                 <GroupBox Header="Files" Grid.Row="2" Grid.ColumnSpan="2" >
-                    <DataGrid Name="SourceDetailFileGrid" ItemsSource="{Binding Files}" AutoGenerateColumns="False" IsReadOnly="True" KeyUp="SourceDetail_FileGrid_KeyUp" MouseDoubleClick="SourceDetailFileGrid_MouseDoubleClick" DragOver="SourceDetailFileGrid_DragOver" Drop="SourceDetailFileGrid_Drop" GiveFeedback="SourceDetailFileGrid_GiveFeedback" MouseMove="SourceDetailFileGrid_MouseMove" >
+                    <DataGrid Name="SourceDetailFileGrid" ItemsSource="{Binding Files}" AllowDrop="True" AutoGenerateColumns="False" IsReadOnly="True" KeyUp="SourceDetail_FileGrid_KeyUp" MouseDoubleClick="SourceDetailFileGrid_MouseDoubleClick" DragOver="SourceDetailFileGrid_DragOver" Drop="SourceDetailFileGrid_Drop" MouseMove="SourceDetailFileGrid_MouseMove" >
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
                             <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="Auto" />

@@ -64,17 +64,6 @@ namespace TrainingSourceManager.Interfaces
             }
         }
 
-        private void SourceTree_GiveFeedback(object sender, GiveFeedbackEventArgs e)
-        {
-            base.OnGiveFeedback(e);
-            if (e.Effects.HasFlag(DragDropEffects.Copy))
-                Mouse.SetCursor(Cursors.Cross);
-            else
-                Mouse.SetCursor(Cursors.No);
-
-            e.Handled = true;
-        }
-
         private void ContextMenu_Unselect(object sender, RoutedEventArgs e)
         {
             if (SourceTree.SelectedItem != null)
@@ -167,6 +156,7 @@ namespace TrainingSourceManager.Interfaces
             if (fileDialog.ShowDialog() == true)
                 await Presenter.RestoreData(fileDialog.FileName);
         }
+
         private void SourceTree_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             TreeViewItem? treeViewItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
@@ -299,26 +289,40 @@ namespace TrainingSourceManager.Interfaces
 
         private void SourceDetailFileGrid_DragOver(object sender, DragEventArgs e)
         {
-
+            if (e.Source != sender && e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effects = DragDropEffects.Copy;
+            else
+                e.Effects = DragDropEffects.None;
+            e.Handled = true;
         }
 
-        private void SourceDetailFileGrid_Drop(object sender, DragEventArgs e)
-        {
-
-        }
-
-        private void SourceDetailFileGrid_GiveFeedback(object sender, GiveFeedbackEventArgs e)
-        {
-
-        }
-
-        private async void SourceDetailFileGrid_MouseMove(object sender, MouseEventArgs e)
+        private async void SourceDetailFileGrid_Drop(object sender, DragEventArgs e)
         {
             if (Presenter.SelectedSourceDetails == null)
                 return;
 
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Handled = true;
+                string[] filePaths = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (filePaths.Length > 0)
+                    await Presenter.SelectedSourceDetails.AddFiles(filePaths);
+            }
+        }
+
+        private async void SourceDetailFileGrid_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (SourceDetailFileGrid.IsEnabled == false)
+                return;
+
+
             if (e.LeftButton == MouseButtonState.Pressed)
             {
+                SourceDetailFileGrid.IsEnabled = false;
+                System.Diagnostics.Debug.WriteLine("Boo");
+                if (Presenter.SelectedSourceDetails == null)
+                    return;
+
                 List<string> files = new List<string>();
                 foreach (FileViewModel fileView in SourceDetailFileGrid.SelectedItems)
                 {
@@ -333,6 +337,7 @@ namespace TrainingSourceManager.Interfaces
                     DragDrop.DoDragDrop(SourceDetailFileGrid, dataObject, DragDropEffects.Copy);
                 }
             }
+            SourceDetailFileGrid.IsEnabled = true;
         }
 
         private void CrossNest_Click(object sender, RoutedEventArgs e)

@@ -107,17 +107,18 @@ namespace TrainingSourceManager.Presenters.MainWindow
             await RefreshCollections();
         }
 
-        public async Task AddFile(string path)
+        public async Task AddFiles(params string[] files)
         {
             if (_source == null)
                 return;
 
-            System.IO.FileInfo fileInfo = new System.IO.FileInfo(path);
-            if (fileInfo.Exists)
+            foreach (string file in files)
             {
-                _source.AddFile(fileInfo);
-                await RefreshCollections();
+                System.IO.FileInfo fileInfo = new System.IO.FileInfo(file);
+                if (fileInfo.Exists)
+                    _source.AddFile(fileInfo);
             }
+            await RefreshCollections();
         }
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = "")
@@ -136,7 +137,8 @@ namespace TrainingSourceManager.Presenters.MainWindow
                 return null;
 
             Data.File file = fileView.File;
-            await _dataContext.Entry(file).Reference(x => x.FileData).LoadAsync();
+            if (file.FileData == null)
+                await _dataContext.Entry(file).Reference(x => x.FileData).LoadAsync();
             return await file.Export(directoryPath);
         }
     }
