@@ -90,7 +90,7 @@
                     </DockPanel>
                 </GroupBox>
                 <GroupBox Header="Files" Grid.Row="2" Grid.ColumnSpan="2" >
-                    <DataGrid Name="SourceDetailFileGrid" ItemsSource="{Binding Files}" AllowDrop="True" AutoGenerateColumns="False" IsReadOnly="True" KeyUp="SourceDetail_FileGrid_KeyUp" MouseDoubleClick="SourceDetailFileGrid_MouseDoubleClick" DragOver="SourceDetailFileGrid_DragOver" Drop="SourceDetailFileGrid_Drop" MouseMove="SourceDetailFileGrid_MouseMove" >
+                    <DataGrid Name="SourceDetailFileGrid" ItemsSource="{Binding Files}" AllowDrop="True" AutoGenerateColumns="False" IsReadOnly="True" KeyUp="SourceDetail_FileGrid_KeyUp" MouseDoubleClick="SourceDetailFileGrid_MouseDoubleClick" DragOver="SourceDetailFileGrid_DragOver" Drop="SourceDetailFileGrid_Drop" MouseMove="SourceDetailFileGrid_MouseMove" PreviewMouseLeftButtonDown="DragDrop_PreviewMouseLeftButtonDown" PreviewMouseMove="DragDrop_PreviewMouseMove" >
                         <DataGrid.Resources>
                             <ContextMenu x:Key="RowContextMenu">
                                 <MenuItem Header="Delete" Click="SourceDetailFilelGrid_Context_Delete" />

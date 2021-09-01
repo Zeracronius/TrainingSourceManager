@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TrainingSourceManager.Components;
 using TrainingSourceManager.Presenters.MainWindow;
 using TrainingSourceManager.Presenters.MainWindow.ViewModels;
 
@@ -24,11 +25,15 @@ namespace TrainingSourceManager.Interfaces
     public partial class MainWindow : Window
     {
         public MainWindowPresenter Presenter { get; private set; }
+        public DragDropComponent DragDropComponent { get; private set; }
 
         public MainWindow(MainWindowPresenter presenter)
         {
             Presenter = presenter;
+            DragDropComponent = new DragDropComponent();
             InitializeComponent();
+
+            DragDropComponent.OnDrag += DragDropComponent_OnDrag;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -315,41 +320,41 @@ namespace TrainingSourceManager.Interfaces
             }
         }
 
-        private async void SourceDetailFileGrid_MouseMove(object sender, MouseEventArgs e)
+        private void SourceDetailFileGrid_MouseMove(object sender, MouseEventArgs e)
         {
-            if (SourceDetailFileGrid.IsEnabled == false)
-                return;
+            //if (SourceDetailFileGrid.IsEnabled == false)
+            //    return;
 
 
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                if ((e.Source is DataGridRow) == false)
-                    return;
+            //if (e.LeftButton == MouseButtonState.Pressed)
+            //{
+            //    if ((e.Source is DataGridRow) == false)
+            //        return;
 
-                if ((SourceDetailFileGrid.Resources["RowContextMenu"] as ContextMenu)?.IsVisible == true)
-                    return;
+            //    if ((SourceDetailFileGrid.Resources["RowContextMenu"] as ContextMenu)?.IsVisible == true)
+            //        return;
 
-                if (Presenter.SelectedSourceDetails == null)
-                    return;
+            //    if (Presenter.SelectedSourceDetails == null)
+            //        return;
 
-                SourceDetailFileGrid.IsEnabled = false;
+            //    SourceDetailFileGrid.IsEnabled = false;
 
-                List<string> files = new List<string>();
-                FileViewModel[] selectedItems = SourceDetailFileGrid.SelectedItems.Cast<FileViewModel>().ToArray();
-                foreach (FileViewModel fileView in selectedItems)
-                {
-                    System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
-                    if (file != null)
-                        files.Add(file.FullName);
-                }
+            //    List<string> files = new List<string>();
+            //    FileViewModel[] selectedItems = SourceDetailFileGrid.SelectedItems.Cast<FileViewModel>().ToArray();
+            //    foreach (FileViewModel fileView in selectedItems)
+            //    {
+            //        System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
+            //        if (file != null)
+            //            files.Add(file.FullName);
+            //    }
 
-                if (files.Count > 0)
-                {
-                    DataObject dataObject = new DataObject(DataFormats.FileDrop, files.ToArray());
-                    DragDrop.DoDragDrop(SourceDetailFileGrid, dataObject, DragDropEffects.Copy);
-                }
-            }
-            SourceDetailFileGrid.IsEnabled = true;
+            //    if (files.Count > 0)
+            //    {
+            //        DataObject dataObject = new DataObject(DataFormats.FileDrop, files.ToArray());
+            //        DragDrop.DoDragDrop(SourceDetailFileGrid, dataObject, DragDropEffects.Copy);
+            //    }
+            //}
+            //SourceDetailFileGrid.IsEnabled = true;
         }
 
         private async void CrossNest_Click(object sender, RoutedEventArgs e)
@@ -396,6 +401,66 @@ namespace TrainingSourceManager.Interfaces
         private void SourceDetailFilelGrid_Context_Delete(object sender, RoutedEventArgs e)
         {
             DeleteDetailFile();
+        }
+
+        private void DragDropComponent_OnDrag(object? sender, MouseButtonEventArgs e)
+        {
+            if (sender == SourceDetailFileGrid)
+                OnSourceDetailFileGrid_Drag(e);
+        }
+
+
+        private async void OnSourceDetailFileGrid_Drag(MouseButtonEventArgs e)
+        {
+            if (e.Source is ScrollViewer)
+                return;
+
+            if ((SourceDetailFileGrid.Resources["RowContextMenu"] as ContextMenu)?.IsVisible == true)
+                return;
+
+            if (Presenter.SelectedSourceDetails == null)
+                return;
+
+            SourceDetailFileGrid.IsEnabled = false;
+
+            List<string> files = new List<string>();
+            FileViewModel[] selectedItems = SourceDetailFileGrid.SelectedItems.Cast<FileViewModel>().ToArray();
+            foreach (FileViewModel fileView in selectedItems)
+            {
+                System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
+                if (file != null)
+                    files.Add(file.FullName);
+            }
+
+            if (files.Count > 0)
+            {
+                DataObject dataObject = new DataObject(DataFormats.FileDrop, files.ToArray());
+                DragDrop.DoDragDrop(SourceDetailFileGrid, dataObject, DragDropEffects.Copy);
+            }
+
+            SourceDetailFileGrid.IsEnabled = true;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        private void DragDrop_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            DragDropComponent.PreviewMouseMove(sender, e);
+        }
+
+        private void DragDrop_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DragDropComponent.PreviewMouseLeftButtonDown(sender, e);
         }
     }
 }
