@@ -11,6 +11,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
 {
     public class MainWindowPresenter : INotifyPropertyChanged
     {
+        private bool _loading;
         private Data.DataContext? _dataContext;
         private readonly List<ViewModels.SelectableSourceItem> _sourceItems;
 
@@ -31,6 +32,10 @@ namespace TrainingSourceManager.Presenters.MainWindow
 
         public async Task LoadData()
         {
+            if (_loading)
+                return;
+            _loading = true;
+
             if (_dataContext != null)
                 await _dataContext.DisposeAsync();
 
@@ -43,6 +48,8 @@ namespace TrainingSourceManager.Presenters.MainWindow
             _sourceItems.Clear();
             _sourceItems.AddRange(sources.Select(x => new ViewModels.SelectableSourceItem(x)));
             await Refresh();
+
+            _loading = false;
         }
 
         public async Task Refresh()

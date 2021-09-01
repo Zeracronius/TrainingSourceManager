@@ -128,6 +128,8 @@ namespace TrainingSourceManager.Interfaces
 
         private async void RefreshData()
         {
+            
+
             SourceTree.IsEnabled = false;
             await Presenter.LoadData();
             SourceTree.IsEnabled = true;

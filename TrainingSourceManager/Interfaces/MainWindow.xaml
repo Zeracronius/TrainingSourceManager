@@ -21,12 +21,12 @@
                 <MenuItem Header="_Backup" Click="Edit_Backup"/>
                 <MenuItem Header="_Restore" Click="Edit_Restore" />
             </MenuItem>
-            <MenuItem Header="_Selected" VerticalContentAlignment="Center" >
-                <MenuItem Header="_Select all" Click="Selected_SelectAll"/>
-                <MenuItem Header="_Clear" Click="Selected_Clear"/>
-                <MenuItem Header="_Export" Click="Selected_Export"/>
+            <MenuItem Header="_Marked" VerticalContentAlignment="Center" >
+                <MenuItem Header="_Mark all" Click="Selected_SelectAll"/>
+                <MenuItem Header="_Clear marked" Click="Selected_Clear"/>
+                <MenuItem Header="_Export marked" Click="Selected_Export"/>
             </MenuItem>
-            <MenuItem Header="_Reload" Click="Reload_Click"  />
+            <MenuItem Header="⭯ _Reload" Click="Reload_Click"  />
             <MenuItem Header="_Cross-Nest" IsCheckable="True" IsChecked="{Binding CrossNest}" Click="CrossNest_Click" />
         </Menu>
         <Grid>
