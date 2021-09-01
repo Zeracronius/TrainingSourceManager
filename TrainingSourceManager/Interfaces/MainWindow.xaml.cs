@@ -294,7 +294,7 @@ namespace TrainingSourceManager.Interfaces
 
         private void SourceDetailFileGrid_DragOver(object sender, DragEventArgs e)
         {
-            if (e.Source != sender && e.Data.GetDataPresent(DataFormats.FileDrop))
+            if (e.OriginalSource != sender && e.Data.GetDataPresent(DataFormats.FileDrop))
                 e.Effects = DragDropEffects.Copy;
             else
                 e.Effects = DragDropEffects.None;
@@ -324,7 +324,6 @@ namespace TrainingSourceManager.Interfaces
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 SourceDetailFileGrid.IsEnabled = false;
-                System.Diagnostics.Debug.WriteLine("Boo");
                 if (Presenter.SelectedSourceDetails == null)
                     return;
 
