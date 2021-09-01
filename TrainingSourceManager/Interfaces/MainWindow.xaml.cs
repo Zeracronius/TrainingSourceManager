@@ -169,7 +169,7 @@ namespace TrainingSourceManager.Interfaces
 
         private void SourceTree_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            TreeViewItem? treeViewItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
+            TreeViewItem? treeViewItem = FindParent<TreeViewItem>(e.OriginalSource as DependencyObject);
 
             if (treeViewItem != null)
             {
@@ -194,12 +194,12 @@ namespace TrainingSourceManager.Interfaces
             e.Handled = true;
         }
 
-        static TreeViewItem? VisualUpwardSearch(DependencyObject? source)
+        static T? FindParent<T>(DependencyObject? source) where T : class
         {
-            while (source != null && (source is TreeViewItem) == false)
+            while (source != null && (source is T) == false)
                 source = VisualTreeHelper.GetParent(source);
             
-            return source as TreeViewItem;
+            return source as T;
         }
         private void ContextMenu_Delete(object sender, RoutedEventArgs e)
         {
@@ -368,14 +368,16 @@ namespace TrainingSourceManager.Interfaces
 
         private async void OnSourceDetailFileGrid_Drag(MouseButtonEventArgs e)
         {
-            if (e.Source is ScrollViewer)
-                return;
-
             if ((SourceDetailFileGrid.Resources["RowContextMenu"] as ContextMenu)?.IsVisible == true)
                 return;
 
             if (Presenter.SelectedSourceDetails == null)
                 return;
+
+            var row = FindParent<DataGridRow>(e.OriginalSource as DependencyObject);
+            if (row == null)
+                return;
+
 
             SourceDetailFileGrid.IsEnabled = false;
 
