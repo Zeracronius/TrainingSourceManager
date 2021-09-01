@@ -37,7 +37,20 @@
             <TextBox Text="{Binding Name, ValidatesOnDataErrors=True}" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" Style="{DynamicResource ValidatingControl}" />
         </Grid>
         <GroupBox Header="Files" Grid.Row="1" Grid.Column="0">
-            <ListBox Name="FileList" ItemsSource="{Binding Files}" AllowDrop="True" GiveFeedback="FileList_GiveFeedback" DragOver="FileList_DragOver" Drop="FileList_Drop" KeyUp="FileList_KeyUp" SelectionMode="Extended" />
+            <ListBox Name="FileList" ItemsSource="{Binding Files}" AllowDrop="True" GiveFeedback="FileList_GiveFeedback" DragOver="FileList_DragOver" Drop="FileList_Drop" KeyUp="FileList_KeyUp" SelectionMode="Extended">
+
+                <ListBox.Resources>
+                    <ContextMenu x:Key="FileContextMenu">
+                        <MenuItem Header="Delete" Click="FilesList_Context_Delete" />
+                    </ContextMenu>
+                </ListBox.Resources>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem" >
+                        <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+
+            </ListBox>
         </GroupBox>
         <GridSplitter Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         <GroupBox Header="Tags" Grid.Row="1" Grid.Column="2">
@@ -52,7 +65,19 @@
                 </Grid.RowDefinitions>
                 <TextBox Name="AddTagTextbox" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,5,5,5" TextWrapping="Wrap" VerticalAlignment="Top" KeyUp="AddTagTextbox_KeyUp" />
                 <Button Name="AddTagButton" Content="Add" Grid.Column="1" Margin="0,3,5,3" Click="AddTagButton_Click" />
-                <ListBox Name="TagsList" ItemsSource="{Binding Tags}" Grid.Row="1" Grid.ColumnSpan="2" KeyUp="TagsList_KeyUp" SelectionMode="Extended" />
+                <ListBox Name="TagsList" ItemsSource="{Binding Tags}" Grid.Row="1" Grid.ColumnSpan="2" KeyUp="TagsList_KeyUp" SelectionMode="Extended">
+
+                    <ListBox.Resources>
+                        <ContextMenu x:Key="TagContextMenu">
+                            <MenuItem Header="Delete" Click="TagsList_Context_Delete" />
+                        </ContextMenu>
+                    </ListBox.Resources>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem" >
+                            <Setter Property="ContextMenu" Value="{StaticResource TagContextMenu}" />
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
             </Grid>
         </GroupBox>
         <WrapPanel Grid.Row="2" Grid.ColumnSpan="3" Height="Auto" Orientation="Horizontal" FlowDirection="RightToLeft" >

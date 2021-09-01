@@ -98,12 +98,16 @@ namespace TrainingSourceManager.Presenters.MainWindow
             }
         }
 
-        public async Task DeleteFile(FileViewModel file)
+        public async Task DeleteFiles(params FileViewModel[] files)
         {
             if (_source == null)
                 return;
 
-            _source.Files.Remove(file.File);
+            foreach (FileViewModel file in files)
+            {
+                if (_source.Files.Contains(file.File))
+                    _source.Files.Remove(file.File);
+            }
             await RefreshCollections();
         }
 

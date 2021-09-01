@@ -103,5 +103,15 @@ namespace TrainingSourceManager.Interfaces
             Presenter.AddTag(AddTagTextbox.Text);
             AddTagTextbox.Text = string.Empty;
         }
+
+        private void TagsList_Context_Delete(object sender, RoutedEventArgs e)
+        {
+            Presenter.DeleteTags(TagsList.SelectedItems.Cast<string>().ToArray());
+        }
+
+        private void FilesList_Context_Delete(object sender, RoutedEventArgs e)
+        {
+            Presenter.DeleteFiles(FileList.SelectedItems.Cast<string>().ToArray());
+        }
     }
 }

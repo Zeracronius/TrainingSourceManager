@@ -270,9 +270,8 @@ namespace TrainingSourceManager.Interfaces
             if (Presenter.SelectedSourceDetails == null)
                 return;
 
-            if (SourceDetailFileGrid.SelectedItem is FileViewModel fileView)
-                await Presenter.SelectedSourceDetails.DeleteFile(fileView);
-
+            FileViewModel[] items = SourceDetailFileGrid.SelectedItems.Cast<FileViewModel>().ToArray();
+            await Presenter.SelectedSourceDetails.DeleteFiles(items);
         }
 
         private async void SourceDetailFileGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
