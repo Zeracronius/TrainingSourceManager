@@ -33,7 +33,7 @@ namespace TrainingSourceManager.Interfaces
             DragDropComponent = new DragDropComponent();
             InitializeComponent();
 
-            DragDropComponent.OnDrag += DragDropComponent_OnDrag;
+            DragDropComponent.Register(SourceDetailFileGrid, OnSourceDetailFileGrid_Drag);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -282,7 +282,7 @@ namespace TrainingSourceManager.Interfaces
 
             if (SourceDetailFileGrid.SelectedItem is FileViewModel fileView)
             {
-                System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
+                System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, Manager.TempFileManager.GetTempPath());
                 if (file != null)
                 {
                     var p = new System.Diagnostics.Process()
@@ -318,43 +318,6 @@ namespace TrainingSourceManager.Interfaces
                 if (filePaths.Length > 0)
                     await Presenter.SelectedSourceDetails.AddFiles(filePaths);
             }
-        }
-
-        private void SourceDetailFileGrid_MouseMove(object sender, MouseEventArgs e)
-        {
-            //if (SourceDetailFileGrid.IsEnabled == false)
-            //    return;
-
-
-            //if (e.LeftButton == MouseButtonState.Pressed)
-            //{
-            //    if ((e.Source is DataGridRow) == false)
-            //        return;
-
-            //    if ((SourceDetailFileGrid.Resources["RowContextMenu"] as ContextMenu)?.IsVisible == true)
-            //        return;
-
-            //    if (Presenter.SelectedSourceDetails == null)
-            //        return;
-
-            //    SourceDetailFileGrid.IsEnabled = false;
-
-            //    List<string> files = new List<string>();
-            //    FileViewModel[] selectedItems = SourceDetailFileGrid.SelectedItems.Cast<FileViewModel>().ToArray();
-            //    foreach (FileViewModel fileView in selectedItems)
-            //    {
-            //        System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
-            //        if (file != null)
-            //            files.Add(file.FullName);
-            //    }
-
-            //    if (files.Count > 0)
-            //    {
-            //        DataObject dataObject = new DataObject(DataFormats.FileDrop, files.ToArray());
-            //        DragDrop.DoDragDrop(SourceDetailFileGrid, dataObject, DragDropEffects.Copy);
-            //    }
-            //}
-            //SourceDetailFileGrid.IsEnabled = true;
         }
 
         private async void CrossNest_Click(object sender, RoutedEventArgs e)
@@ -403,13 +366,6 @@ namespace TrainingSourceManager.Interfaces
             DeleteDetailFile();
         }
 
-        private void DragDropComponent_OnDrag(object? sender, MouseButtonEventArgs e)
-        {
-            if (sender == SourceDetailFileGrid)
-                OnSourceDetailFileGrid_Drag(e);
-        }
-
-
         private async void OnSourceDetailFileGrid_Drag(MouseButtonEventArgs e)
         {
             if (e.Source is ScrollViewer)
@@ -427,7 +383,7 @@ namespace TrainingSourceManager.Interfaces
             FileViewModel[] selectedItems = SourceDetailFileGrid.SelectedItems.Cast<FileViewModel>().ToArray();
             foreach (FileViewModel fileView in selectedItems)
             {
-                System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
+                System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, Manager.TempFileManager.GetTempPath());
                 if (file != null)
                     files.Add(file.FullName);
             }
@@ -439,28 +395,6 @@ namespace TrainingSourceManager.Interfaces
             }
 
             SourceDetailFileGrid.IsEnabled = true;
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-        private void DragDrop_PreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            DragDropComponent.PreviewMouseMove(sender, e);
-        }
-
-        private void DragDrop_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            DragDropComponent.PreviewMouseLeftButtonDown(sender, e);
         }
     }
 }

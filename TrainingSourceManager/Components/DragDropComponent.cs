@@ -12,19 +12,40 @@ namespace TrainingSourceManager.Components
     {
         public event EventHandler<MouseButtonEventArgs>? OnDrag;
 
-        private Point? _startPoint;
+        private readonly Dictionary<System.Windows.Controls.Control, Action<MouseButtonEventArgs>?> _registeredControls;
+
         private object? _control;
         private MouseButtonEventArgs? _originalArgs;
+        private Point? _startPoint;
+
+        public IReadOnlyCollection<System.Windows.Controls.Control> RegisteredControls => _registeredControls.Keys;
+
+        public DragDropComponent()
+        {
+            _registeredControls = new Dictionary<System.Windows.Controls.Control, Action<MouseButtonEventArgs>?>();
+        }
+
+        
+        public void Register(System.Windows.Controls.Control control, Action<MouseButtonEventArgs>? onDrag = null)
+        {
+            if (_registeredControls.ContainsKey(control))
+                return;
+
+            _registeredControls.Add(control, onDrag);
+            control.PreviewMouseLeftButtonDown += PreviewMouseLeftButtonDown;
+            control.PreviewMouseMove += PreviewMouseMove;
+        }
 
 
-        public void PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+
+        private void PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _startPoint = e.GetPosition(null);
             _control = sender;
             _originalArgs = e;
         }
 
-        public void PreviewMouseMove(object sender, MouseEventArgs e)
+        private void PreviewMouseMove(object sender, MouseEventArgs e)
         {
             if (_startPoint == null || _control == null || _originalArgs == null)
                 return;
@@ -36,6 +57,10 @@ namespace TrainingSourceManager.Components
             {
                 if (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
                 {
+                    if (_control is System.Windows.Controls.Control control)
+                        if (_registeredControls.TryGetValue(control, out Action<MouseButtonEventArgs>? callback))
+                            callback?.Invoke(_originalArgs);
+
                     OnDrag?.Invoke(_control, _originalArgs);
                     Clear();
                 }

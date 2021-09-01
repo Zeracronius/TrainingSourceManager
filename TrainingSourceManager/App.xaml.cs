@@ -17,6 +17,7 @@ namespace TrainingSourceManager
         {
             base.OnStartup(e);
 
+            Manager.TempFileManager.Clean();
             Interfaces.MainWindow window = new Interfaces.MainWindow(new Presenters.MainWindow.MainWindowPresenter());
             window.Show();
         }
