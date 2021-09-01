@@ -12,7 +12,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
     public class MainWindowPresenter : INotifyPropertyChanged
     {
         private Data.DataContext? _dataContext;
-        private List<ViewModels.SelectableSourceItem> _sourceItems;
+        private readonly List<ViewModels.SelectableSourceItem> _sourceItems;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

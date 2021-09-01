@@ -193,7 +193,7 @@ namespace TrainingSourceManager.Interfaces
         {
             while (source != null && (source is TreeViewItem) == false)
                 source = VisualTreeHelper.GetParent(source);
-
+            
             return source as TreeViewItem;
         }
         private void ContextMenu_Delete(object sender, RoutedEventArgs e)
@@ -323,12 +323,20 @@ namespace TrainingSourceManager.Interfaces
 
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                SourceDetailFileGrid.IsEnabled = false;
+                if ((e.Source is DataGridRow) == false)
+                    return;
+
+                if ((SourceDetailFileGrid.Resources["RowContextMenu"] as ContextMenu)?.IsVisible == true)
+                    return;
+
                 if (Presenter.SelectedSourceDetails == null)
                     return;
 
+                SourceDetailFileGrid.IsEnabled = false;
+
                 List<string> files = new List<string>();
-                foreach (FileViewModel fileView in SourceDetailFileGrid.SelectedItems)
+                FileViewModel[] selectedItems = SourceDetailFileGrid.SelectedItems.Cast<FileViewModel>().ToArray();
+                foreach (FileViewModel fileView in selectedItems)
                 {
                     System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, System.IO.Path.GetTempPath());
                     if (file != null)
@@ -383,6 +391,11 @@ namespace TrainingSourceManager.Interfaces
         private void Reload_Click(object sender, RoutedEventArgs e)
         {
             RefreshData();
+        }
+
+        private void SourceDetailFilelGrid_Context_Delete(object sender, RoutedEventArgs e)
+        {
+            DeleteDetailFile();
         }
     }
 }
