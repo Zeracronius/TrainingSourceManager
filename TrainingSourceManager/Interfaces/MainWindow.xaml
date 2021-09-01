@@ -86,6 +86,16 @@
                                     <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
                                 </ItemsPanelTemplate>
                             </ListBox.ItemsPanel>
+                            <ListBox.Resources>
+                                <ContextMenu x:Key="TagContextMenu">
+                                    <MenuItem Header="Delete" Click="SourceDetailTags_Context_Delete" />
+                                </ContextMenu>
+                            </ListBox.Resources>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem" >
+                                    <Setter Property="ContextMenu" Value="{StaticResource TagContextMenu}" />
+                                </Style>
+                            </ListBox.ItemContainerStyle>
                         </ListBox>
                     </DockPanel>
                 </GroupBox>

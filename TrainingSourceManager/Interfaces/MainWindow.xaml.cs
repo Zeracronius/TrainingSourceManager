@@ -398,5 +398,10 @@ namespace TrainingSourceManager.Interfaces
 
             SourceDetailFileGrid.IsEnabled = true;
         }
+
+        private void SourceDetailTags_Context_Delete(object sender, RoutedEventArgs e)
+        {
+            DeleteDetailTag();
+        }
     }
 }
