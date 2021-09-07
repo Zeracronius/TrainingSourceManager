@@ -102,6 +102,7 @@ namespace TrainingSourceManager.Interfaces
         {
             Presenter.AddTag(AddTagTextbox.Text);
             AddTagTextbox.Text = string.Empty;
+            AddTagTextbox.Focus();
         }
 
         private void TagsList_Context_Delete(object sender, RoutedEventArgs e)

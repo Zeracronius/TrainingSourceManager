@@ -1,5 +1,4 @@
 ﻿Exception on adding files with same names.
-Addings tags unfocus the textbox.
 Open function on files context menu.
 Look into using sqlite.
 Rethink menu texts.

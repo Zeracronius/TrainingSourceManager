@@ -283,7 +283,7 @@ namespace TrainingSourceManager.Interfaces
 
             if (SourceDetailFileGrid.SelectedItem is FileViewModel fileView)
             {
-                System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, Manager.TempFileManager.GetTempPath());
+                System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, Manager.TempFileManager.GetTempDirectoryPath());
                 if (file != null)
                 {
                     var p = new System.Diagnostics.Process()
@@ -343,6 +343,7 @@ namespace TrainingSourceManager.Interfaces
             {
                 await Presenter.SelectedSourceDetails.AddTag(tag);
                 SourceDetail_TagTextbox.Text = null;
+                SourceDetail_TagTextbox.Focus();
             }
         }
 
@@ -386,7 +387,7 @@ namespace TrainingSourceManager.Interfaces
             FileViewModel[] selectedItems = SourceDetailFileGrid.SelectedItems.Cast<FileViewModel>().ToArray();
             foreach (FileViewModel fileView in selectedItems)
             {
-                System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, Manager.TempFileManager.GetTempPath());
+                System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, Manager.TempFileManager.GetTempDirectoryPath());
                 if (file != null)
                     files.Add(file.FullName);
             }

@@ -10,7 +10,11 @@ namespace TrainingSourceManager.Manager
     {
         private const string _directory = "TrainingSourceManager";
 
-        public static string GetTempPath()
+        /// <summary>
+        /// Returns a path to the directory where the program stores temp files.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetTempDirectoryPath()
         {
             string directoryPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), _directory);
             if (System.IO.Directory.Exists(directoryPath) == false)
@@ -19,6 +23,10 @@ namespace TrainingSourceManager.Manager
             return System.IO.Path.Combine(System.IO.Path.GetTempPath(), _directory);
         }
 
+
+        /// <summary>
+        /// Attempts to delete all files in the temporary directory.
+        /// </summary>
         public static void Clean()
         {
             string directoryPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), _directory);
