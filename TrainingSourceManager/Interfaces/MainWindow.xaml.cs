@@ -276,26 +276,9 @@ namespace TrainingSourceManager.Interfaces
             await Presenter.SelectedSourceDetails.DeleteFiles(items);
         }
 
-        private async void SourceDetailFileGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void SourceDetailFileGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (Presenter.SelectedSourceDetails == null)
-                return;
-
-            if (SourceDetailFileGrid.SelectedItem is FileViewModel fileView)
-            {
-                System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, Manager.TempFileManager.GetTempDirectoryPath());
-                if (file != null)
-                {
-                    var p = new System.Diagnostics.Process()
-                    {
-                        StartInfo = new System.Diagnostics.ProcessStartInfo(file.FullName)
-                        {
-                            UseShellExecute = true
-                        }
-                    };
-                    p.Start();
-                }
-            }
+            OpenDetailFile();
         }
 
         private void SourceDetailFileGrid_DragOver(object sender, DragEventArgs e)
@@ -404,6 +387,33 @@ namespace TrainingSourceManager.Interfaces
         private void SourceDetailTags_Context_Delete(object sender, RoutedEventArgs e)
         {
             DeleteDetailTag();
+        }
+
+        private void SourceDetailFilelGrid_Context_Open(object sender, RoutedEventArgs e)
+        {
+            OpenDetailFile();
+        }
+
+        private async void OpenDetailFile()
+        {
+            if (Presenter.SelectedSourceDetails == null)
+                return;
+
+            if (SourceDetailFileGrid.SelectedItem is FileViewModel fileView)
+            {
+                System.IO.FileInfo? file = await Presenter.SelectedSourceDetails.ExportFile(fileView, Manager.TempFileManager.GetTempDirectoryPath());
+                if (file != null)
+                {
+                    var p = new System.Diagnostics.Process()
+                    {
+                        StartInfo = new System.Diagnostics.ProcessStartInfo(file.FullName)
+                        {
+                            UseShellExecute = true
+                        }
+                    };
+                    p.Start();
+                }
+            }
         }
     }
 }

@@ -1,4 +1,3 @@
 ﻿Exception on adding files with same names.
-Open function on files context menu.
 Look into using sqlite.
 Rethink menu texts.
