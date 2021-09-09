@@ -18,8 +18,8 @@
             <MenuItem Header="_Edit" VerticalContentAlignment="Center" >
                 <MenuItem Header="_Add" Click="Edit_Add"/>
                 <MenuItem Header="_Delete" Click="Edit_Delete"/>
-                <MenuItem Header="_Backup" Click="Edit_Backup"/>
-                <MenuItem Header="_Restore" Click="Edit_Restore" />
+                <MenuItem Header="_Backup" IsEnabled="False" Click="Edit_Backup"/>
+                <MenuItem Header="_Restore" IsEnabled="False" Click="Edit_Restore" />
             </MenuItem>
             <MenuItem Header="_Selection" VerticalContentAlignment="Center" >
                 <MenuItem Header="_Select all" Click="Selected_SelectAll"/>
