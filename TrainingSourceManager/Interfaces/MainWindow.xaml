@@ -14,7 +14,7 @@
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
     <DockPanel DataContext="{Binding Presenter}">
-        <Menu ToolBar.OverflowMode="Never" DockPanel.Dock="Top">
+        <Menu Name="TopMenu" ToolBar.OverflowMode="Never" DockPanel.Dock="Top">
             <MenuItem Header="_Edit" VerticalContentAlignment="Center" >
                 <MenuItem Header="_Add" Click="Edit_Add"/>
                 <MenuItem Header="_Delete" Click="Edit_Delete"/>

@@ -306,8 +306,12 @@ namespace TrainingSourceManager.Interfaces
 
         private async void CrossNest_Click(object sender, RoutedEventArgs e)
         {
+            TopMenu.IsEnabled = false;
             SourceTree.IsEnabled = false;
+
             await Presenter.Refresh();
+
+            TopMenu.IsEnabled = true;
             SourceTree.IsEnabled = true;
         }
 

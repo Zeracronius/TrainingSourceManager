@@ -15,6 +15,8 @@ namespace TrainingSourceManager.Presenters.MainWindow
         private Data.DataContext? _dataContext;
         private readonly List<ViewModels.SelectableSourceItem> _sourceItems;
 
+        public bool IsLoading => _loading;
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry> SourceTreeEntries { get; set; }
@@ -47,27 +49,43 @@ namespace TrainingSourceManager.Presenters.MainWindow
 
             _sourceItems.Clear();
             _sourceItems.AddRange(sources.Select(x => new ViewModels.SelectableSourceItem(x)));
-            await Refresh();
 
             _loading = false;
+            await Refresh();
         }
 
         public async Task Refresh()
         {
+            if (_loading)
+                return;
 
+            _loading = true;
             await Task.Run(() =>
             {
-                IEnumerable<string> tags = _sourceItems.SelectMany(x => x.Tags).Distinct();
+                string[] tags = _sourceItems.SelectMany(x => x.Tags).Distinct().ToArray();
 
                 List<ViewModels.ITreeEntry> list = new List<ViewModels.ITreeEntry>();
                 if (CrossNest)
                 {
-                    HashSet<string> includedTags = new HashSet<string>();
-                    foreach (string tag in tags)
+                    System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+                    stopwatch.Start();
+
+                    Task[] tasks = new Task[tags.Length];
+                    for (int i = 0; i < tags.Length; i++)
                     {
-                        includedTags.Clear();
-                        list.Add(new ViewModels.CategoryTreeEntry(NestTag(includedTags, tag, _sourceItems.Where(x => x.Tags.Contains(tag))), tag));
+                        string tag = tags[i];
+                        tasks[i] = Task.Run(() =>
+                        {
+                            ViewModels.SelectableSourceItem[] branchSources = _sourceItems.Where(x => x.Tags.Contains(tag)).ToArray();
+                            string[] branchTags = branchSources.SelectMany(x => x.Tags).Distinct().Where(x => x != tag).ToArray();
+                            list.Add(new ViewModels.CategoryTreeEntry(NestTag(branchTags, branchSources), tag));
+                        });
                     }
+                    Task.WaitAll(tasks);
+
+                    stopwatch.Stop();
+                    System.Diagnostics.Debug.WriteLine("Cross-nest: " + stopwatch.ElapsedMilliseconds + "ms");
+                    GC.Collect();
                 }
                 else
                 {
@@ -82,27 +100,30 @@ namespace TrainingSourceManager.Presenters.MainWindow
 
             });
             OnPropertyChanged(nameof(SourceTreeEntries));
+            _loading = false;
         }
 
 
 
-        private List<ViewModels.ITreeEntry> NestTag(HashSet<string> includedTags, string currentTag, IEnumerable<ViewModels.SelectableSourceItem> sources)
+        private List<ViewModels.ITreeEntry> NestTag(string[] remainingTags, ViewModels.SelectableSourceItem[] sources)
         {
-            includedTags.Add(currentTag);
-            IEnumerable<string> tags = sources.SelectMany(x => x.Tags).Distinct();
-            IEnumerable<string> unhandledTags = tags.Where(x => includedTags.Contains(x) == false);
-            if (unhandledTags.Any())
+            var result = new List<ViewModels.ITreeEntry>();
+            List<ViewModels.SelectableSourceItem> remaining = sources.ToList();
+
+            for (int i = 0; i < remainingTags.Length; i++)
             {
-                // Not reached bottom yet!
-                var result = new List<ViewModels.ITreeEntry>();
-                foreach (string tag in unhandledTags)
-                    result.Add(new ViewModels.CategoryTreeEntry(NestTag(new HashSet<string>(includedTags), tag, sources.Where(x => x.Tags.Contains(tag))), tag));
-                return result;
+                ViewModels.SelectableSourceItem[] taggedSources = sources.Where(x => x.Tags.Contains(remainingTags[i])).ToArray();
+                if (taggedSources.Length > 0)
+                {
+                    remaining.RemoveAll(x => taggedSources.Contains(x));
+                    result.Add(new ViewModels.CategoryTreeEntry(NestTag(remainingTags.Where(x => x != remainingTags[i]).ToArray(), taggedSources), remainingTags[i]));
+                }
             }
-            else
-            {
-                return new List<ViewModels.ITreeEntry>(sources.Select(x => new ViewModels.SourceTreeEntry(x)));
-            }
+
+            if (remaining.Count > 0)
+                result.AddRange(remaining.Select(x => new ViewModels.SourceTreeEntry(x)));
+
+            return result;
         }
 
 
