@@ -1,2 +1,1 @@
 ﻿Exception on adding files with same names.
-Look into using sqlite.
