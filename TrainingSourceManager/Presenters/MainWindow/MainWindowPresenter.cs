@@ -15,21 +15,49 @@ namespace TrainingSourceManager.Presenters.MainWindow
 
         private bool _loading;
         private Data.DataContext? _dataContext;
+        private string _filter;
         private readonly List<ViewModels.SelectableSourceItem> _sourceItems;
+        private List<ViewModels.ITreeEntry> _sourceTreeEntries;
 
         public bool IsLoading => _loading;
 
-        public System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry> SourceTreeEntries { get; set; }
         public SourceDetailsPresenter? SelectedSourceDetails { get; private set; }
         public bool CrossNest { get; set; }
-        public string Filter { get; set; }
+        public string Filter
+        {
+            set
+            {
+                _filter = value;
+
+                OnPropertyChanged(nameof(SourceTreeEntries));
+            }
+        }
+
+
+        public System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry> SourceTreeEntries
+        {
+            get
+            {
+                IQueryable<ViewModels.ITreeEntry> itemQuery = _sourceTreeEntries.AsQueryable();
+
+                if (String.IsNullOrWhiteSpace(_filter) == false)
+                {
+                    itemQuery = itemQuery.Where(x => x.Caption.Contains(_filter, StringComparison.OrdinalIgnoreCase));
+                }
+
+                return new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>(itemQuery);
+            }
+        }
+
+
+
         public string Status { get; private set; }
 
         public MainWindowPresenter()
         {
-            SourceTreeEntries = new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>();
             _sourceItems = new List<ViewModels.SelectableSourceItem>();
-            Filter = "";
+            _sourceTreeEntries = new List<ViewModels.ITreeEntry>();
+            _filter = "";
             Status = "";
         }
 
@@ -97,7 +125,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
                 list = list.OrderBy(x => x.Caption).ToList();
                 list.AddRange(_sourceItems.Where(x => x.Tags.Length == 0).Select(x => new ViewModels.SourceTreeEntry(x)));
 
-                SourceTreeEntries = new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>(list);
+                _sourceTreeEntries = list;
 
             });
 
@@ -193,7 +221,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
                 List<Data.Source> selected = new List<Data.Source>();
                 GetSelected(SourceTreeEntries, ref selected);
 
-                
+
                 List<Task> exportTasks = new List<Task>();
                 foreach (Data.Source source in selected)
                 {
@@ -206,7 +234,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
             });
         }
 
-        
+
         private void GetSelected(IEnumerable<ViewModels.ITreeEntry> items, ref List<Data.Source> selected)
         {
             foreach (ViewModels.ITreeEntry entry in items)
@@ -214,7 +242,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
                 switch (entry)
                 {
                     case ViewModels.CategoryTreeEntry category:
-                            GetSelected(category.Entries, ref selected);
+                        GetSelected(category.Entries, ref selected);
                         break;
 
                     case ViewModels.SourceTreeEntry source:

@@ -44,7 +44,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="170"/>
                 </Grid.ColumnDefinitions>
-                <TextBox Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="{Binding Filter}">
+                <TextBox Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged, IsAsync=True}">
                     <TextBox.Style>
                         <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                             <Style.Resources>
