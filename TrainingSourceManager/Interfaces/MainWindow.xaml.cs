@@ -73,12 +73,16 @@ namespace TrainingSourceManager.Interfaces
         {
             if (SourceTree.SelectedItem != null)
                 SetSelection((ITreeEntry)SourceTree.SelectedItem, false);
+
+            Presenter.UpdateStatus();
         }
 
         private void ContextMenu_Select(object sender, RoutedEventArgs e)
         {
             if (SourceTree.SelectedItem != null)
                 SetSelection((ITreeEntry)SourceTree.SelectedItem, true);
+
+            Presenter.UpdateStatus();
         }
 
         private void SetSelection(ITreeEntry item, bool selected)
@@ -110,12 +114,16 @@ namespace TrainingSourceManager.Interfaces
         {
             foreach (ITreeEntry item in SourceTree.ItemsSource)
                 SetSelection(item, false);
+
+            Presenter.UpdateStatus();
         }
 
         private void Selected_SelectAll(object sender, RoutedEventArgs e)
         {
             foreach (ITreeEntry item in SourceTree.ItemsSource)
                 SetSelection(item, true);
+
+            Presenter.UpdateStatus();
         }
 
         private void Edit_Add(object sender, RoutedEventArgs e)
@@ -128,8 +136,6 @@ namespace TrainingSourceManager.Interfaces
 
         private async void RefreshData()
         {
-            
-
             SourceTree.IsEnabled = false;
             await Presenter.LoadData();
             SourceTree.IsEnabled = true;
@@ -418,6 +424,11 @@ namespace TrainingSourceManager.Interfaces
                     p.Start();
                 }
             }
+        }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            Presenter.UpdateStatus();
         }
     }
 }

@@ -11,25 +11,26 @@ namespace TrainingSourceManager.Presenters.MainWindow
 {
     public class MainWindowPresenter : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler? PropertyChanged;
+
         private bool _loading;
         private Data.DataContext? _dataContext;
         private readonly List<ViewModels.SelectableSourceItem> _sourceItems;
 
         public bool IsLoading => _loading;
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
         public System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry> SourceTreeEntries { get; set; }
-
         public SourceDetailsPresenter? SelectedSourceDetails { get; private set; }
-
-
         public bool CrossNest { get; set; }
+        public string Filter { get; set; }
+        public string Status { get; private set; }
 
         public MainWindowPresenter()
         {
             SourceTreeEntries = new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>();
             _sourceItems = new List<ViewModels.SelectableSourceItem>();
+            Filter = "";
+            Status = "";
         }
 
         public async Task LoadData()
@@ -45,7 +46,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
             await _dataContext.Database.EnsureCreatedAsync();
 
 
-            List<Data.Source> sources = await _dataContext.Sources.Include(x => x.Metadata).ToListAsync();
+            List<Data.Source> sources = await _dataContext.Sources.Include(x => x.Metadata).Include(x => x.Files).ToListAsync();
 
             _sourceItems.Clear();
             _sourceItems.AddRange(sources.Select(x => new ViewModels.SelectableSourceItem(x)));
@@ -99,7 +100,10 @@ namespace TrainingSourceManager.Presenters.MainWindow
                 SourceTreeEntries = new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>(list);
 
             });
+
+
             OnPropertyChanged(nameof(SourceTreeEntries));
+            UpdateStatus();
             _loading = false;
         }
 
@@ -219,6 +223,15 @@ namespace TrainingSourceManager.Presenters.MainWindow
                         break;
                 }
             }
+        }
+
+        public void UpdateStatus()
+        {
+            List<Data.Source> sources = new List<Data.Source>();
+            GetSelected(SourceTreeEntries, ref sources);
+            Status = $"{sources.Count} ({(sources.SelectMany(x => x.Files.Select(y => y.Length)).Sum() / 1024D):N1} Kb)";
+
+            OnPropertyChanged(nameof(Status));
         }
     }
 }
