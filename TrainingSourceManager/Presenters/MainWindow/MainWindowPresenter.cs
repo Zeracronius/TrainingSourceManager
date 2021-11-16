@@ -17,7 +17,6 @@ namespace TrainingSourceManager.Presenters.MainWindow
         private Data.DataContext? _dataContext;
         private string _filter;
         private readonly List<ViewModels.SelectableSourceItem> _sourceItems;
-        private List<ViewModels.ITreeEntry> _sourceTreeEntries;
 
         public bool IsLoading => _loading;
 
@@ -28,27 +27,11 @@ namespace TrainingSourceManager.Presenters.MainWindow
             set
             {
                 _filter = value;
-
-                OnPropertyChanged(nameof(SourceTreeEntries));
+                Refresh().Wait();
             }
         }
 
-
-        public System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry> SourceTreeEntries
-        {
-            get
-            {
-                IQueryable<ViewModels.ITreeEntry> itemQuery = _sourceTreeEntries.AsQueryable();
-
-                if (String.IsNullOrWhiteSpace(_filter) == false)
-                {
-                    itemQuery = itemQuery.Where(x => x.Caption.Contains(_filter, StringComparison.OrdinalIgnoreCase));
-                }
-
-                return new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>(itemQuery);
-            }
-        }
-
+        public System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry> SourceTreeEntries { get; private set; }
 
 
         public string Status { get; private set; }
@@ -56,7 +39,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
         public MainWindowPresenter()
         {
             _sourceItems = new List<ViewModels.SelectableSourceItem>();
-            _sourceTreeEntries = new List<ViewModels.ITreeEntry>();
+            SourceTreeEntries = new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>();
             _filter = "";
             Status = "";
         }
@@ -91,7 +74,49 @@ namespace TrainingSourceManager.Presenters.MainWindow
             _loading = true;
             await Task.Run(() =>
             {
-                string[] tags = _sourceItems.SelectMany(x => x.Tags).Distinct().ToArray();
+                IQueryable<ViewModels.SelectableSourceItem> filteredSources = _sourceItems.AsQueryable();
+                if (String.IsNullOrWhiteSpace(_filter) == false)
+                {
+                    string[] filterParts = System.Text.RegularExpressions.Regex.Split(_filter, @"(?=[-+])");
+
+                    string nameFilter = "";
+                    List<string> includedTags = new List<string>();
+                    List<string> excludedTags = new List<string>();
+
+                    foreach (string filterPart in filterParts)
+                    {
+                        if (String.IsNullOrWhiteSpace(filterPart))
+                            continue;
+
+                        string part = filterPart.Substring(1, filterPart.Length - 1).Trim();
+
+                        switch (filterPart[0])
+                        {
+                            case '-':
+                                excludedTags.Add(part);
+                                break;
+
+                            case '+':
+                                includedTags.Add(part);
+                                break;
+
+                            default:
+                                nameFilter = part;
+                                break;
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(nameFilter) == false)
+                        filteredSources = filteredSources.Where(x => x.Name.Contains(nameFilter, StringComparison.OrdinalIgnoreCase));
+
+                    foreach (string tag in includedTags)
+                        filteredSources = filteredSources.Where(x => x.Tags.Any(x => x.StartsWith(tag, StringComparison.OrdinalIgnoreCase)));
+
+                    foreach (string tag in excludedTags)
+                        filteredSources = filteredSources.Where(x => x.Tags.Any(x => x.StartsWith(tag, StringComparison.OrdinalIgnoreCase)) == false);
+                }
+
+                string[] tags = filteredSources.SelectMany(x => x.Tags).Distinct().ToArray();
 
                 List<ViewModels.ITreeEntry> list = new List<ViewModels.ITreeEntry>();
                 if (CrossNest)
@@ -105,7 +130,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
                         string tag = tags[i];
                         tasks[i] = Task.Run(() =>
                         {
-                            ViewModels.SelectableSourceItem[] branchSources = _sourceItems.Where(x => x.Tags.Contains(tag)).ToArray();
+                            ViewModels.SelectableSourceItem[] branchSources = filteredSources.Where(x => x.Tags.Contains(tag)).ToArray();
                             string[] branchTags = branchSources.SelectMany(x => x.Tags).Distinct().Where(x => x != tag).ToArray();
                             list.Add(new ViewModels.CategoryTreeEntry(NestTag(branchTags, branchSources), tag));
                         });
@@ -119,14 +144,13 @@ namespace TrainingSourceManager.Presenters.MainWindow
                 else
                 {
                     foreach (string tag in tags)
-                        list.Add(new ViewModels.CategoryTreeEntry(_sourceItems.Where(x => x.Tags.Contains(tag)).Select(x => new ViewModels.SourceTreeEntry(x)), tag));
+                        list.Add(new ViewModels.CategoryTreeEntry(filteredSources.Where(x => x.Tags.Contains(tag)).Select(x => new ViewModels.SourceTreeEntry(x)), tag));
                 }
 
                 list = list.OrderBy(x => x.Caption).ToList();
-                list.AddRange(_sourceItems.Where(x => x.Tags.Length == 0).Select(x => new ViewModels.SourceTreeEntry(x)));
+                list.AddRange(filteredSources.Where(x => x.Tags.Length == 0).Select(x => new ViewModels.SourceTreeEntry(x)));
 
-                _sourceTreeEntries = list;
-
+                SourceTreeEntries = new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>(list);
             });
 
 
@@ -218,8 +242,8 @@ namespace TrainingSourceManager.Presenters.MainWindow
 
             return Task.Run(() =>
             {
-                List<Data.Source> selected = new List<Data.Source>();
-                GetSelected(SourceTreeEntries, ref selected);
+                List<Data.Source> selected = _sourceItems.Where(x => x.Selected).Select(x => x.Source).ToList();
+                //GetSelected(_sourceItems, ref selected);
 
 
                 List<Task> exportTasks = new List<Task>();
@@ -234,29 +258,9 @@ namespace TrainingSourceManager.Presenters.MainWindow
             });
         }
 
-
-        private void GetSelected(IEnumerable<ViewModels.ITreeEntry> items, ref List<Data.Source> selected)
-        {
-            foreach (ViewModels.ITreeEntry entry in items)
-            {
-                switch (entry)
-                {
-                    case ViewModels.CategoryTreeEntry category:
-                        GetSelected(category.Entries, ref selected);
-                        break;
-
-                    case ViewModels.SourceTreeEntry source:
-                        if (source.Selected && selected.Contains(source.Source) == false)
-                            selected.Add(source.Source);
-                        break;
-                }
-            }
-        }
-
         public void UpdateStatus()
         {
-            List<Data.Source> sources = new List<Data.Source>();
-            GetSelected(SourceTreeEntries, ref sources);
+            List<Data.Source> sources = _sourceItems.Where(x => x.Selected).Select(x => x.Source).ToList();
             Status = $"{sources.Count} ({(sources.SelectMany(x => x.Files.Select(y => y.Length)).Sum() / 1024D):N1} Kb)";
 
             OnPropertyChanged(nameof(Status));
