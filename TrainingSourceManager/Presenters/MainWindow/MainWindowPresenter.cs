@@ -74,6 +74,8 @@ namespace TrainingSourceManager.Presenters.MainWindow
             _loading = true;
             await Task.Run(() =>
             {
+                List<ViewModels.ITreeEntry> list = new List<ViewModels.ITreeEntry>();
+
                 IQueryable<ViewModels.SelectableSourceItem> filteredSources = _sourceItems.AsQueryable();
                 if (String.IsNullOrWhiteSpace(_filter) == false)
                 {
@@ -107,7 +109,7 @@ namespace TrainingSourceManager.Presenters.MainWindow
                                 break;
 
                             default:
-                                nameFilter = part;
+                                nameFilter = filterPart;
                                 break;
                         }
                     }
@@ -120,43 +122,47 @@ namespace TrainingSourceManager.Presenters.MainWindow
 
                     foreach (string tag in excludedTags)
                         filteredSources = filteredSources.Where(x => x.Tags.Any(x => x.StartsWith(tag, StringComparison.OrdinalIgnoreCase)) == false);
-                }
 
-                string[] tags = filteredSources.SelectMany(x => x.Tags).Distinct().ToArray();
 
-                List<ViewModels.ITreeEntry> list = new List<ViewModels.ITreeEntry>();
-                if (CrossNest)
-                {
-                    System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-                    stopwatch.Start();
-
-                    Task[] tasks = new Task[tags.Length];
-                    for (int i = 0; i < tags.Length; i++)
-                    {
-                        string tag = tags[i];
-                        tasks[i] = Task.Run(() =>
-                        {
-                            ViewModels.SelectableSourceItem[] branchSources = filteredSources.Where(x => x.Tags.Contains(tag)).ToArray();
-                            string[] branchTags = branchSources.SelectMany(x => x.Tags).Distinct().Where(x => x != tag).ToArray();
-                            list.Add(new ViewModels.CategoryTreeEntry(NestTag(branchTags, branchSources), tag));
-                        });
-                    }
-                    Task.WaitAll(tasks);
-
-                    stopwatch.Stop();
-                    System.Diagnostics.Debug.WriteLine("Cross-nest: " + stopwatch.ElapsedMilliseconds + "ms");
-                    GC.Collect();
+                    SourceTreeEntries = new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>(filteredSources.Select(x => new ViewModels.SourceTreeEntry(x)));
                 }
                 else
                 {
-                    foreach (string tag in tags)
-                        list.Add(new ViewModels.CategoryTreeEntry(filteredSources.Where(x => x.Tags.Contains(tag)).Select(x => new ViewModels.SourceTreeEntry(x)), tag));
+                    string[] tags = _sourceItems.SelectMany(x => x.Tags).Distinct().ToArray();
+
+                    if (CrossNest)
+                    {
+                        System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+                        stopwatch.Start();
+
+                        Task[] tasks = new Task[tags.Length];
+                        for (int i = 0; i < tags.Length; i++)
+                        {
+                            string tag = tags[i];
+                            tasks[i] = Task.Run(() =>
+                            {
+                                ViewModels.SelectableSourceItem[] branchSources = _sourceItems.Where(x => x.Tags.Contains(tag)).ToArray();
+                                string[] branchTags = branchSources.SelectMany(x => x.Tags).Distinct().Where(x => x != tag).ToArray();
+                                list.Add(new ViewModels.CategoryTreeEntry(NestTag(branchTags, branchSources), tag));
+                            });
+                        }
+                        Task.WaitAll(tasks);
+
+                        stopwatch.Stop();
+                        System.Diagnostics.Debug.WriteLine("Cross-nest: " + stopwatch.ElapsedMilliseconds + "ms");
+                        GC.Collect();
+                    }
+                    else
+                    {
+                        foreach (string tag in tags)
+                            list.Add(new ViewModels.CategoryTreeEntry(_sourceItems.Where(x => x.Tags.Contains(tag)).Select(x => new ViewModels.SourceTreeEntry(x)), tag));
+                    }
+
+                    list = list.OrderBy(x => x.Caption).ToList();
+                    list.AddRange(_sourceItems.Where(x => x.Tags.Length == 0).Select(x => new ViewModels.SourceTreeEntry(x)));
+                    SourceTreeEntries = new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>(list);
                 }
 
-                list = list.OrderBy(x => x.Caption).ToList();
-                list.AddRange(filteredSources.Where(x => x.Tags.Length == 0).Select(x => new ViewModels.SourceTreeEntry(x)));
-
-                SourceTreeEntries = new System.Collections.ObjectModel.ObservableCollection<ViewModels.ITreeEntry>(list);
             });
 
 
