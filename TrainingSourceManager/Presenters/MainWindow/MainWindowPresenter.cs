@@ -93,10 +93,16 @@ namespace TrainingSourceManager.Presenters.MainWindow
                         switch (filterPart[0])
                         {
                             case '-':
+                                if (filterPart.Length == 1)
+                                    continue;
+
                                 excludedTags.Add(part);
                                 break;
 
                             case '+':
+                                if (filterPart.Length == 1)
+                                    continue;
+
                                 includedTags.Add(part);
                                 break;
 
@@ -261,7 +267,9 @@ namespace TrainingSourceManager.Presenters.MainWindow
         public void UpdateStatus()
         {
             List<Data.Source> sources = _sourceItems.Where(x => x.Selected).Select(x => x.Source).ToList();
-            Status = $"{sources.Count} ({(sources.SelectMany(x => x.Files.Select(y => y.Length)).Sum() / 1024D):N1} Kb)";
+            double bytes = sources.SelectMany(x => x.Files.Select(y => y.Length)).Sum() / 1024D / 1024D;
+
+            Status = $"{sources.Count} ({bytes:N2} Mb)";
 
             OnPropertyChanged(nameof(Status));
         }
