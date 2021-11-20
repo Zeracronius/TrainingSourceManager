@@ -150,7 +150,8 @@ namespace TrainingSourceManager.Interfaces
         {
             if (SourceTree.SelectedItem is SourceTreeEntry entry)
             {
-                if (MessageBox.Show($"Are you sure you wish to delete '{entry.Caption}'") == MessageBoxResult.Yes)
+                MessageBoxResult result = MessageBox.Show($"Are you sure you wish to delete '{entry.Caption}'.", "Delete source", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
                     await Presenter.DeleteSource(entry);
             }
         }
@@ -429,6 +430,17 @@ namespace TrainingSourceManager.Interfaces
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
             Presenter.UpdateStatus();
+        }
+
+        private void SourceTree_KeyUp(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Delete:
+                case Key.Back:
+                    DeleteSelected();
+                    break;
+            }
         }
     }
 }
