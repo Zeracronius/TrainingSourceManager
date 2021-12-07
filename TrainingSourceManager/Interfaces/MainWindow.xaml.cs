@@ -150,7 +150,7 @@ namespace TrainingSourceManager.Interfaces
         {
             if (SourceTree.SelectedItem is SourceTreeEntry entry)
             {
-                MessageBoxResult result = MessageBox.Show($"Are you sure you wish to delete '{entry.Caption}'.", "Delete source", MessageBoxButton.YesNo);
+                MessageBoxResult result = MessageBox.Show(this, $"Are you sure you wish to delete '{entry.Caption}'.", "Delete source", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes)
                     await Presenter.DeleteSource(entry);
             }

@@ -65,7 +65,7 @@
                 </TextBox.Style>
             </TextBox>
             <Label Name="StatusBox" Grid.Row="2" Content="{Binding Status}" />
-            <TreeView Name="SourceTree" HorizontalContentAlignment="Stretch" ItemsSource="{Binding SourceTreeEntries}" BorderThickness="0" Drop="SourceTree_Drop" AllowDrop="True" DragOver="SourceTree_DragOver" PreviewMouseRightButtonDown="SourceTree_PreviewMouseRightButtonDown" Grid.RowSpan="1" Grid.Row="1" SelectedItemChanged="SourceTree_SelectedItemChanged" >
+            <TreeView Name="SourceTree" HorizontalContentAlignment="Stretch" ItemsSource="{Binding SourceTreeEntries}" BorderThickness="0" Drop="SourceTree_Drop" AllowDrop="True" DragOver="SourceTree_DragOver" PreviewMouseRightButtonDown="SourceTree_PreviewMouseRightButtonDown" Grid.RowSpan="1" Grid.Row="1" SelectedItemChanged="SourceTree_SelectedItemChanged" KeyUp="SourceTree_KeyUp" >
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type viewModels:CategoryTreeEntry}" ItemsSource="{Binding Entries}">
                         <StackPanel Orientation="Horizontal">
